@@ -1,0 +1,62 @@
+/* Основний стиль для навігаційної панелі */
+.navbar {
+    background-color: #333;
+    padding: 25px 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
+    &-list {
+        list-style-type: none;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        margin: 0;
+        padding: 0;
+        
+        @media screen and (max-width: 600px) {
+            flex-direction: column;
+            gap: 20px;
+        }
+    }
+
+    &-item {
+        display: inline-block;
+    }
+
+    &-link {
+        text-decoration: none;
+        color: #fff;
+        font-size: 16px;
+        padding: 8px 16px;
+        border-radius: 4px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+
+        &:hover {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        &:active {
+            background-color: #0056b3;
+        }
+    }
+
+    &-button {
+        padding: 10px 20px;
+        background-color: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+
+        &:hover {
+            background-color: darken(#28a745, 10%);
+        }
+
+        &:active {
+            background-color: darken(#28a745, 15%);
+            transform: scale(0.98);
+        }
+    }
+}
