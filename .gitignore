@@ -1,21 +1,5 @@
-# django
-*__pycache__
-
-# certificates
-*key.pem
-*cert.pem
-
-# Virtual environment
-.venv
-venv
-.env
-env
-
 # vscode
 .vscode
-
-# db
-*.sqlite3
 
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
