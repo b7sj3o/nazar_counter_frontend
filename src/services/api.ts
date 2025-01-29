@@ -10,7 +10,7 @@ import {
 import { MessageResponse } from "../types/layout";
 
 const api = axios.create({
-    baseURL: process.env.REACT_APP_API_URL,
+    baseURL: process.env.REACT_APP_API_URL || "https://nazar-counter-backend-49fd7cb0447d.herokuapp.com/api/",
     headers: {
     "Content-Type": "application/json",
     },
