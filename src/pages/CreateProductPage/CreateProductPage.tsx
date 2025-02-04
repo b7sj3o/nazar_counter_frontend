@@ -48,7 +48,6 @@ const CreateProductPage: React.FC = () => {
                             product_type: product.product_type_name || "",
                             producer: product.producer_name || "",
                             volume: product.volume || "",
-                            strength: product.strength || "",
                             puffs_amount: product.puffs_amount || "",
                             resistance: product.resistance || "",
                             pod_model: product.pod_model || "",
@@ -94,7 +93,6 @@ const CreateProductPage: React.FC = () => {
             product_type: selectedType,
             producer: "",
             volume: "",
-            strength: "",
             puffs_amount: "",
             resistance: "",
             pod_model: "",
@@ -163,15 +161,6 @@ const CreateProductPage: React.FC = () => {
                                 <option value="" disabled>--------</option>
                                 {productForeignKeys?.volumes.map(volume => (
                                     <option key={volume.id} value={volume.value}>{volume.value}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="form-group">
-                            <label>Міцність:</label>
-                            <select name="strength" value={formData.strength} onChange={handleChange} required>
-                                <option value="" disabled>--------</option>
-                                {productForeignKeys?.strengths.map(strength => (
-                                    <option key={strength.id} value={strength.value}>{strength.value}</option>
                                 ))}
                             </select>
                         </div>

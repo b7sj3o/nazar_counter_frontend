@@ -11,7 +11,6 @@ import {
     DisposableProduct,
     CartridgeProduct,
     PodProduct,
-    ReadyMixProduct
 } from "../../types/product";
 import ProductSearch from "../../components/ProductSearch/ProductSearch";
 import "./HomePage.scss";
@@ -65,7 +64,6 @@ const HomePage: React.FC = () => {
             | DisposableProduct
             | CartridgeProduct
             | PodProduct
-            | ReadyMixProduct
     ) => {
         return Object.entries(currentLevel).map(([key, value]) => (
             <div
@@ -81,23 +79,22 @@ const HomePage: React.FC = () => {
     const renderProductList = (currentLevel: ProductInfo[]) => {
         return (
             <>
-                {currentLevel.map((product: ProductInfo) => (
-                    <div key={product.id} className="product-item">
-                        <h4>{product.name}</h4>
-                        <p>Barcode: {product.barcode}</p>
-                        <p>Amount: {product.amount}</p>
-                        <p>Price: {product.sell_price}</p>
-                        <br />
-                        <button onClick={() => handleAddSale(product)}>
-                            Добавити продажу
-                        </button>
-                    </div>
-                ))}
-                <div className="create-product-container">
-                    <button className="create-product-button" onClick={() => handleCreateProduct(currentLevel[0].barcode)}>
-                        Створити продукт
-                    </button>
+                <div className="product-item-container">
+                    {currentLevel.map((product: ProductInfo) => (
+                        <div key={product.id} className={`product-item ${product.amount === 0 ? "product-item__empty" : ""}`}>
+                            <h4>{product.name}</h4>
+                            <p>Кількість: {product.amount}</p>
+                            <p>Ціна: {product.sell_price}</p>
+                            <br />
+                            <button onClick={() => handleAddSale(product)} disabled={product.amount === 0}>
+                                Добавити продажу
+                            </button>
+                        </div>
+                    ))}
                 </div>
+                <button className="create-product-button" onClick={() => handleCreateProduct(currentLevel[0].barcode)}>
+                    Створити продукт
+                </button>
             </>
         );
     };
@@ -143,14 +140,14 @@ const HomePage: React.FC = () => {
         <div className="container">
         <ProductSearch />
         <div className="products-container">
-            <h2 className="title">Products</h2>
+            <h2 className="title">Товар</h2>
             
             {path.length > 0 && (
                 <>
                 <div className="path-container">
                     <div className="path">
                         {/* "home" doesn't exist so indexOf will return -1 end it will clear path fully :)) */}
-                        <h4 onClick={() => moveToLevel("home")}>Home</h4>
+                        <h4 onClick={() => moveToLevel("home")}>Головна</h4>
                         {path.map((key) => (
                             <h4 key={key} onClick={() => moveToLevel(key)}>{key}</h4>
                         ))}
@@ -158,10 +155,10 @@ const HomePage: React.FC = () => {
                 </div>
                 <div className="product-btns">
                     <button className="back-button" onClick={handleGoBack}>
-                        Back
+                        Назад
                     </button>
                     <button className="back-button" onClick={handleGoHome}>
-                        Home
+                        Головна
                     </button>
                 </div>
                 </>

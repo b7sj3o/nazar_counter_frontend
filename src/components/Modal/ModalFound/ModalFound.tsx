@@ -26,7 +26,7 @@ const ModalFound: React.FC<ModalProps> = ({ product, isOpen, onClose, showModal 
     };
 
     return (
-        <div className={"modal-found-overlay"}>
+        <div className="modal-found-overlay">
             <div className="modal-found-container">
                 <h2>{product.name}</h2>
                 <p>Amount: {product.amount}</p>

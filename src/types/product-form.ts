@@ -2,7 +2,6 @@ export interface ProductForm {
     product_type: string;
     producer: string;
     volume?: string;
-    strength?: string;
     puffs_amount?: string;
     resistance?: string;
     pod_model?: string;
@@ -19,7 +18,6 @@ export interface ProductForeignKeys {
     product_types: ForeignKeyItem[];
     producers: Producer[];
     volumes: ForeignKeyItem[];
-    strengths: ForeignKeyItem[];
     puffs_amounts: ForeignKeyItem[];
     resistances: ForeignKeyItem[];
     pod_models: ForeignKeyItem[];

@@ -48,7 +48,6 @@ const ProductSearch: React.FC<ProductSearchProps> = ({ showAddButton = false, on
 
                 // Non-must-have fields
                 (product.volume || "").toLowerCase().includes(word) ||
-                (product.strength || "").toLowerCase().includes(word) ||
                 (product.puffs_amount || "").toLowerCase().includes(word) ||
                 (product.resistance || "").toLowerCase().includes(word) ||
                 (product.pod_model || "").toLowerCase().includes(word)

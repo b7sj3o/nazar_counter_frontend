@@ -3,7 +3,6 @@ export interface Product {
     product_type_name: string;
     producer_name: string;
     volume?: string;
-    strength?: string;
     puffs_amount?: string;
     resistance?: string;
     pod_model?: string;
@@ -33,12 +32,8 @@ export interface ProductInfo {
     sell_price: number;
 }
 
-export interface ReadyMixProduct {
-    [strength: string]: ProductInfo[];
-}
-
 export interface VolumeGroupedProducts {
-    [volume: string]: ReadyMixProduct;
+    [volume: string]: ProductInfo[];
 }
 
 export interface DisposableProduct {
