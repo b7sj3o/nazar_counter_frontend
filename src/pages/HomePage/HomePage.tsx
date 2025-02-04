@@ -65,6 +65,7 @@ const HomePage: React.FC = () => {
             | CartridgeProduct
             | PodProduct
     ) => {
+        console.log(currentLevel);
         return Object.entries(currentLevel).map(([key, value]) => (
             <div
                 key={key}
