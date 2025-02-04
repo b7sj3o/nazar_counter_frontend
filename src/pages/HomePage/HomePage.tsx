@@ -65,7 +65,6 @@ const HomePage: React.FC = () => {
             | CartridgeProduct
             | PodProduct
     ) => {
-        console.log(currentLevel);
         return Object.entries(currentLevel).map(([key, value]) => (
             <div
                 key={key}
@@ -135,12 +134,6 @@ const HomePage: React.FC = () => {
         setPath(path.slice(0, index + 1));
     };
 
-    const test = () => {
-        console.log("TEST");
-        console.log(currentLevel)
-        console.log(productTree)
-        showModal("TEST");
-    }
 
     const currentLevel = getCurrentLevel();
 
@@ -171,7 +164,6 @@ const HomePage: React.FC = () => {
                 </div>
                 </>
             )}
-            <button onClick={test}>TEST</button>
             <div className="buttons-container">{renderCurrentLevel()}</div>
         </div>
         </div>
