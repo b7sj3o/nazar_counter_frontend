@@ -135,6 +135,13 @@ const HomePage: React.FC = () => {
         setPath(path.slice(0, index + 1));
     };
 
+    const test = () => {
+        console.log("TEST");
+        console.log(currentLevel)
+        console.log(productTree)
+        showModal("TEST");
+    }
+
     const currentLevel = getCurrentLevel();
 
     return (
@@ -164,7 +171,7 @@ const HomePage: React.FC = () => {
                 </div>
                 </>
             )}
-
+            <button onClick={test}>TEST</button>
             <div className="buttons-container">{renderCurrentLevel()}</div>
         </div>
         </div>
