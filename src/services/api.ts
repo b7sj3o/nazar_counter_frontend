@@ -1,11 +1,9 @@
 import axios from "axios";
 import { ProductTree, Product, ArrivalProducts, OptProducts, ProductSale, SalesSummary } from "../types/product";
 import {
-    ProductType,
-    PodModel,
-    Producer,
     ProductForeignKeys,
-    ProductForm
+    ProductForm,
+    ResponseModel
 } from "../types/product-form";
 import { MessageResponse } from "../types/layout";
 
@@ -65,9 +63,8 @@ export const addSale = async (product_id: number, amount: number): Promise<Messa
     } catch (error: any) {
         if (error.response) {
             return { "message": error.response.data.message };
-        } else {
-            return { "message": "An error occurred." };
         }
+        return { "message": "An error occurred." };
     }
 };
 
@@ -101,27 +98,10 @@ export const getProductTree = async (): Promise<ProductTree> => {
     return response.data;
 };
 
-// Get all product types (Одноразка,Жижа,...)
-export const getProductTypes = async (): Promise<ProductType[]> => {
-    const response = await api.get<ProductType[]>("product-types/");
-    return response.data;
-};
-
-// Get all producers (Vaporesso, Elfbar, Elfliq, ...)
-export const getProducers = async (): Promise<Producer[]> => {
-    const response = await api.get<Producer[]>("producers/");
-    return response.data;
-};
-
-// Get all pod models (Xros3, Xros4, Oxva xlim, ...)
-export const getPodModels = async (): Promise<PodModel[]> => {
-    const response = await api.get<PodModel[]>("pod-models/");
-    return response.data;
-};
 
 export const getFilteredSales = async (filters: any): Promise<ProductSale[]> => {
     try {
-        const response = await api.get("product_sales/", {
+        const response = await api.get("product-sales/", {
             params: filters,
         });
         return response.data;
@@ -133,10 +113,22 @@ export const getFilteredSales = async (filters: any): Promise<ProductSale[]> => 
 
 export const getSalesSummary = async (): Promise<SalesSummary> => {
     try {
-        const response = await api.get('sales_summary/');
+        const response = await api.get('sales-summary/');
         return response.data;
     } catch (error) {
         console.error('Error: ', error);
         return { total_revenue: 0, total_amount: 0, total_earning: 0 };
+    }
+};
+
+export const createMultipleProducts = async (products: string): Promise<ResponseModel> => {
+    try {
+        const response = await api.post('create-multiple-products/', products);
+        return response.data;
+    } catch (error: any) {
+        if (error.response) {
+            return { "message": error.response.data.message };
+        } 
+        return { "message": "Трапилась помилка.", "success": false };
     }
 };

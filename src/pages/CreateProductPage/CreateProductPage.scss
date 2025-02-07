@@ -63,3 +63,84 @@ input[type="number"] {
         margin: 0;
     }
 }
+
+.switcher {
+    display: flex;
+    justify-content: center;
+    column-gap: 50px;
+    margin: 40px auto;
+    background-color: #3a8ae0;
+    border-radius: 10px;
+    width: fit-content;
+    padding: 20px 20px 30px 20px;
+}
+
+.switcher-value {
+    font-size: 24px;
+    color: #fff;
+    position: relative;
+    cursor: pointer;
+    transition: all .3s;
+
+    &:hover {
+        &::after {
+            content: '';
+            position: absolute;
+            display: block;
+            margin-top: 10px;
+            width: 100%;
+            height: 5px;
+            background-color: #fff;
+            border-radius: 30px;
+        }
+    }
+
+    &.active {
+        &::after {
+            content: '';
+            position: absolute;
+            display: block;
+            margin-top: 10px;
+            width: 100%;
+            height: 5px;
+            background-color: #fff;
+            border-radius: 30px;
+        }
+    }
+}
+
+#form-many {
+    .form-title {
+        text-align: center;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .form-instructions {
+        font-weight: bold;
+        color: #444;
+        margin-top: 10px;
+
+        &-main {
+            display: block;
+            font-size: 18px;
+        }
+    }
+
+    .multiple-products-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .products-textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+        }
+    }
+}

@@ -2,6 +2,9 @@ export interface ProductForm {
     product_type: string;
     producer: string;
     volume?: string;
+    strength?: string;
+    liquidModel?: string;
+    cartridgeModel?: string;
     puffs_amount?: string;
     resistance?: string;
     pod_model?: string;
@@ -18,9 +21,12 @@ export interface ProductForeignKeys {
     product_types: ForeignKeyItem[];
     producers: Producer[];
     volumes: ForeignKeyItem[];
+    strengths: ForeignKeyItem[];
     puffs_amounts: ForeignKeyItem[];
     resistances: ForeignKeyItem[];
     pod_models: ForeignKeyItem[];
+    liquid_models: ForeignKeyItem[];
+    cartridge_models: ForeignKeyItem[];
 }
 
 export interface ForeignKeyItem {
@@ -42,4 +48,9 @@ export interface Producer {
 export interface PodModel {
     id: number;
     value: string;
+}
+
+export interface ResponseModel {
+    message: string;
+    success?: boolean;
 }

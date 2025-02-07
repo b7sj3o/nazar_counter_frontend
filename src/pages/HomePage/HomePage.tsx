@@ -2,15 +2,9 @@
 import React, { useState, useEffect } from "react";
 import { addSale, getProductTree } from "../../services/api";
 import { useModalMessage } from "../../context/ModalMessageContext";
-import { useNavigate } from 'react-router-dom';
 import {
     ProductTree,
     ProductInfo,
-    ProductTypeGroup,
-    VolumeGroupedProducts,
-    DisposableProduct,
-    CartridgeProduct,
-    PodProduct,
 } from "../../types/product";
 import ProductSearch from "../../components/ProductSearch/ProductSearch";
 import "./HomePage.scss";
@@ -20,7 +14,6 @@ const HomePage: React.FC = () => {
     const [path, setPath] = useState<string[]>([]);
     const [saleTriggered, setSaleTriggered] = useState(false);
     const { showModal } = useModalMessage(); 
-    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -57,13 +50,7 @@ const HomePage: React.FC = () => {
     }
 
     const renderObject = (
-        currentLevel:
-            | ProductTree
-            | ProductTypeGroup
-            | VolumeGroupedProducts
-            | DisposableProduct
-            | CartridgeProduct
-            | PodProduct
+        currentLevel: any
     ) => {
         return Object.entries(currentLevel).map(([key, value]) => (
             <div
@@ -78,36 +65,22 @@ const HomePage: React.FC = () => {
 
     const renderProductList = (currentLevel: ProductInfo[]) => {
         return (
-            <>
-                <div className="product-item-container">
-                    {currentLevel.map((product: ProductInfo) => (
-                        <div key={product.id} className={`product-item ${product.amount === 0 ? "product-item__empty" : ""}`}>
-                            <h4>{product.name}</h4>
-                            <p>Кількість: {product.amount}</p>
-                            <p>Ціна: {product.sell_price}</p>
-                            <br />
-                            <button onClick={() => handleAddSale(product)} disabled={product.amount === 0}>
-                                Добавити продажу
-                            </button>
-                        </div>
-                    ))}
-                </div>
-                <button className="create-product-button" onClick={() => handleCreateProduct(currentLevel[0].barcode)}>
-                    Створити продукт
-                </button>
-            </>
+            <div className="product-item-container">
+                {currentLevel.map((product: ProductInfo) => (
+                    <div key={product.id} className={`product-item ${product.amount === 0 ? "product-item__empty" : ""}`}>
+                        <h4>{product.name}</h4>
+                        <p>Кількість: {product.amount}</p>
+                        <p>Ціна: {product.sell_price}</p>
+                        <br />
+                        <button onClick={() => handleAddSale(product)} disabled={product.amount === 0}>
+                            Добавити продажу
+                        </button>
+                    </div>
+                ))}
+            </div>
         );
     };
     
-
-    const handleCreateProduct = (productBarcode: string) => {
-        if (productBarcode) {
-            navigate(`/create-product?productBarcode=${productBarcode}`);
-        } else {
-            navigate("/create-product");
-        }
-    };
-
 
     const handleAddSale = async (product: ProductInfo) => {
         try {

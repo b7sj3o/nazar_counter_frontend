@@ -3,6 +3,9 @@ export interface Product {
     product_type_name: string;
     producer_name: string;
     volume?: string;
+    strength?: string;
+    liquid_model?: string;
+    cartridge_model?: string;
     puffs_amount?: string;
     resistance?: string;
     pod_model?: string;
@@ -30,10 +33,7 @@ export interface ProductInfo {
     amount: number;
     buy_price: number;
     sell_price: number;
-}
-
-export interface VolumeGroupedProducts {
-    [volume: string]: ProductInfo[];
+    drop_sell_price: number;
 }
 
 export interface DisposableProduct {
@@ -44,12 +44,32 @@ export interface CartridgeProduct {
     [resistance: string]: ProductInfo[];
 }
 
+export interface CartridgeModelGroupedProducts {
+    [cartridgeModel: string]: CartridgeProduct[];
+}
+
 export interface PodProduct {
     [podModel: string]: ProductInfo[];
 }
 
+export interface ReadyLiquidProduct {
+    [volume: string]: StrengthGroupedProducts[];
+}
+
+export interface VolumeGroupedProducts {
+    [volume: string]: StrengthGroupedProducts[];
+}
+
+export interface StrengthGroupedProducts {
+    [strength: string]: ProductInfo[];
+}
+
+export interface MixLiquidProduct {
+    [liquidModel: string]: VolumeGroupedProducts[];
+}
+
 export interface ProductTypeGroup {
-    [producer: string]: VolumeGroupedProducts | DisposableProduct | CartridgeProduct | PodProduct;
+    [producer: string]: ReadyLiquidProduct | MixLiquidProduct | DisposableProduct | CartridgeProduct | PodProduct;
 }
 
 export interface ProductTree {
