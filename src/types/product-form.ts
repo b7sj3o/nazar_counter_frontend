@@ -3,8 +3,8 @@ export interface ProductForm {
     producer: string;
     volume?: string;
     strength?: string;
-    liquidModel?: string;
-    cartridgeModel?: string;
+    liquid_model?: string;
+    cartridge_model?: string;
     puffs_amount?: string;
     resistance?: string;
     pod_model?: string;

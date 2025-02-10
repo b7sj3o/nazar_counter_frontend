@@ -34,6 +34,7 @@ export interface ProductInfo {
     buy_price: number;
     sell_price: number;
     drop_sell_price: number;
+    resistance?: string;
 }
 
 export interface DisposableProduct {
@@ -45,7 +46,7 @@ export interface CartridgeProduct {
 }
 
 export interface CartridgeModelGroupedProducts {
-    [cartridgeModel: string]: CartridgeProduct[];
+    [cartridge_model: string]: CartridgeProduct[];
 }
 
 export interface PodProduct {
@@ -65,7 +66,7 @@ export interface StrengthGroupedProducts {
 }
 
 export interface MixLiquidProduct {
-    [liquidModel: string]: VolumeGroupedProducts[];
+    [liquid_model: string]: VolumeGroupedProducts[];
 }
 
 export interface ProductTypeGroup {

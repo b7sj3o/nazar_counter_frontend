@@ -89,8 +89,8 @@ const CreateProductPage: React.FC = () => {
             puffs_amount: "",
             resistance: "",
             pod_model: "",
-            liquidModel: "",
-            cartridgeModel: "",
+            liquid_model: "",
+            cartridge_model: "",
         }));
     };
 
@@ -104,20 +104,21 @@ const CreateProductPage: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
+            console.log(formData)
             const response = await createProduct(formData);
             showModal(response.message);
 
-            setFormData({
-                product_type: "",
-                producer: "",
-                name: '',
-                buy_price: 0,
-                sell_price: 0,
-                amount: 0,
-                drop_sell_price: 0,
-                barcode: ""
-            });
-            setFilteredProducers([]);
+            // setFormData({
+            //     product_type: "",
+            //     producer: "",
+            //     name: '',
+            //     buy_price: 0,
+            //     sell_price: 0,
+            //     amount: 0,
+            //     drop_sell_price: 0,
+            //     barcode: ""
+            // });
+            // setFilteredProducers([]);
 
         } catch (error) {
             showModal(`creating product: ${error}`);
@@ -130,7 +131,7 @@ const CreateProductPage: React.FC = () => {
         const productsInput = form.elements.namedItem("products") as HTMLTextAreaElement;
         const productsText = productsInput.value;
 
-        productsInput.value = "";
+        // productsInput.value = "";
         try {
             const response = await createMultipleProducts(productsText);
             showModal(response.message);
@@ -168,7 +169,7 @@ const CreateProductPage: React.FC = () => {
                 </div>
                 <div className="form-group">
                     <label>Міцність:</label>
-                    <select name="strength" value={formData.strength} onChange={handleChange} required>
+                    <select name="strength" value={formData.strength} onChange={handleChange}>
                         <option value="" disabled>--------</option>
                         {productForeignKeys?.strengths.map(strength => (
                             <option key={strength.id} value={strength.value}>{strength.value}</option>
@@ -188,7 +189,7 @@ const CreateProductPage: React.FC = () => {
             <>
                 <div className="form-group">
                     <label>Модель рідини:</label>
-                    <select name="liquidModel" value={formData.liquidModel} onChange={handleChange} required>
+                    <select name="liquid_model" value={formData.liquid_model} onChange={handleChange}>
                         <option value="" disabled>--------</option>
                         {productForeignKeys?.liquid_models.map(liquid_model => (
                             <option key={liquid_model.id} value={liquid_model.value}>{liquid_model.value}</option>
@@ -225,7 +226,7 @@ const CreateProductPage: React.FC = () => {
             <>
             <div className="form-group">
             <label>Модель картриджу:</label>
-                <select name="cartridgeModel" value={formData.cartridgeModel} onChange={handleChange} required>
+                <select name="cartridge_model" value={formData.cartridge_model} onChange={handleChange}>
                     <option value="" disabled>--------</option>
                     {productForeignKeys?.cartridge_models.map(cartridge_model => (
                         <option key={cartridge_model.id} value={cartridge_model.value}>{cartridge_model.value}</option>
@@ -359,10 +360,10 @@ const CreateProductPage: React.FC = () => {
             <br />
             <strong className="form-instructions form-instructions-main">Формат для кожної групи продуктів: <br />(Вказувати через кому, замість стрілки)</strong>
             <br />
-            <strong className="form-instructions">Готова рідина</strong> &gt; виробник &gt; мл &gt; смак &gt; закупочна ціна &gt; продажна ціна &gt; дроп ціна &gt; к-сть<br />
-            <strong className="form-instructions">Самозаміс</strong> &gt; виробник &gt; модель &gt; мл &gt; смак &gt; закупочна ціна &gt; продажна ціна &gt; дроп ціна &gt; к-сть<br />
+            <strong className="form-instructions">Готова рідина</strong> &gt; виробник &gt; мл &gt; (мг) &gt; смак &gt; закупочна ціна &gt; продажна ціна &gt; дроп ціна &gt; к-сть<br />
+            <strong className="form-instructions">Самозаміс</strong> &gt; виробник &gt; (модель) &gt; мл &gt; (мг) &gt; смак &gt; закупочна ціна &gt; продажна ціна &gt; дроп ціна &gt; к-сть<br />
             <strong className="form-instructions">Под</strong> &gt; виробник &gt; модель &gt; кольори &gt; закупочна ціна &gt; продажна ціна &gt; дроп ціна &gt; к-сть<br />
-            <strong className="form-instructions">Картридж</strong> &gt; виробник &gt; модель &gt; опір &gt; закупочна ціна &gt; продажна ціна &gt; дроп ціна &gt; к-сть<br />
+            <strong className="form-instructions">Картридж</strong> &gt; виробник &gt; (модель) &gt; опір &gt; закупочна ціна &gt; продажна ціна &gt; дроп ціна &gt; к-сть<br />
             <strong className="form-instructions">Одноразка</strong> &gt; виробник &gt; кількість тяг &gt; смак &gt; закупочна ціна &gt; продажна ціна &gt; дроп ціна &gt; к-сть
             <br /><br />
 

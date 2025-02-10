@@ -68,7 +68,7 @@ const HomePage: React.FC = () => {
             <div className="product-item-container">
                 {currentLevel.map((product: ProductInfo) => (
                     <div key={product.id} className={`product-item ${product.amount === 0 ? "product-item__empty" : ""}`}>
-                        <h4>{product.name}</h4>
+                        <h4>{product.resistance ? product.resistance : product.name}</h4>
                         <p>Кількість: {product.amount}</p>
                         <p>Ціна: {product.sell_price}</p>
                         <br />

@@ -1,55 +1,30 @@
-import os
-import sqlite3
-import psycopg2
-from dotenv import load_dotenv
-from sqlalchemy import create_engine, MetaData, Table
+# 1. Функція, яка вітає користувача
+def greet(name):
+    print(f"Привіт, {name}!")
 
-load_dotenv()
+greet("Аня") # Привіт, Аня!
 
-DB_NAME = os.getenv("DB_NAME", "db.sqlite3")
-DB_USER = os.getenv("DB_USER", "")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "")
-DB_HOST = os.getenv("DB_HOST", "")
-DB_PORT = os.getenv("DB_PORT", "")
+# 2. Функція, яка знаходить найбільше з трьох чисел
+def max_number(a, b, c):
+    return max(a, b, c)
 
-# Підключення до SQLite
-sqlite_conn = sqlite3.connect("backend/db.sqlite3")
+print(max_number(5, 10, 3)) # 10
 
-# Підключення до PostgreSQL
-pg_conn = psycopg2.connect(
-    database=DB_NAME,
-    user=DB_USER,
-    password=DB_PASSWORD,
-    host=DB_HOST,
-    port=DB_PORT,
-)
+# 3. Функція для обчислення факторіалу числа
+def factorial(n):
+    result = 1
+    for i in range(1, n + 1):
+        result *= i
+    return result
 
-# Таблиці, які потрібно скопіювати
-tables_to_copy = [
-    "api_product",
-    "api_productsale",
-]
+print(factorial(5)) # 120 (1 * 2 * 3 * 4 * 5 = 120)
 
+# 4. Функції для конвертації температури
+def convert_to_fahrenheit(temp):
+    return (temp * 1.8) + 32
 
-for table_name in tables_to_copy:
-    # Отримуємо дані з SQLite
-    sqlite_cursor = sqlite_conn.cursor()
+def convert_to_celsius(temp):
+    return (temp - 32) / 1.8
 
-    sqlite_cursor.execute(f"SELECT * FROM {table_name}")
-    rows = sqlite_cursor.fetchall()
-
-    # Отримуємо назви колонок
-    column_names = [description[0] for description in sqlite_cursor.description]
-    columns = ", ".join(column_names)
-
-    # Формуємо SQL для вставки даних у PostgreSQL
-    placeholders = ", ".join(["%s"] * len(column_names))
-    insert_query = f"INSERT INTO {table_name} ({columns}) VALUES ({placeholders})"
-
-    with pg_conn.cursor() as pg_cursor:
-        pg_cursor.executemany(insert_query, rows)
-        pg_conn.commit()
-
-# Закриваємо з'єднання
-sqlite_conn.close()
-pg_conn.close()
+print(convert_to_fahrenheit(0))   # 32.0 (переведення 0°C у °F)
+print(convert_to_celsius(100))    # 37.777... (переведення 100°F у °C)
