@@ -41,6 +41,7 @@ const ProductSearch: React.FC<ProductSearchProps> = ({ showAddButton = false, on
 
         const filtered = products.filter((product) => {
             try {
+                console.log(product)
                 return queries.every((word) =>
                     // Must-have fields
                     product.product_type_name.toLowerCase().includes(word) ||
@@ -48,13 +49,13 @@ const ProductSearch: React.FC<ProductSearchProps> = ({ showAddButton = false, on
     
                     // Non-must-have fields
                     (product.name || "").toLowerCase().includes(word) ||
-                    (product.volume || "").toLowerCase().includes(word) ||
-                    (product.strength || "").toLowerCase().includes(word) ||
-                    (product.cartridge_model || "").toLowerCase().includes(word) ||
-                    (product.liquid_model || "").toLowerCase().includes(word) ||
-                    (product.puffs_amount || "").toLowerCase().includes(word) ||
-                    (product.resistance || "").toLowerCase().includes(word) ||
-                    (product.pod_model || "").toLowerCase().includes(word)
+                    (product.volume_amount || "").toLowerCase().includes(word) ||
+                    (product.strength_amount || "").toLowerCase().includes(word) ||
+                    (product.cartridge_model_name || "").toLowerCase().includes(word) ||
+                    (product.liquid_model_name || "").toLowerCase().includes(word) ||
+                    (product.puffs_amount_value || "").toLowerCase().includes(word) ||
+                    (product.resistance_amount || "").toLowerCase().includes(word) ||
+                    (product.pod_model_name || "").toLowerCase().includes(word)
                 )
             } catch {
                 console.log(product)
@@ -98,7 +99,7 @@ const ProductSearch: React.FC<ProductSearchProps> = ({ showAddButton = false, on
                         // Якщо запит є або його немає, показувати відповідні продукти
                         (inputQuery.length >= 1 ? filteredProducts : products).map((product) => (
                             <li key={product.id} className="product-search__item">
-                                <h3 className="product-search__name">{product.name}</h3>
+                                <h3 className="product-search__name">{product.name || product.resistance_amount}</h3>
                                 <p className="product-search__detail">К-сть: {product.amount}</p>
                                 <p className="product-search__detail">Виробник: {product.producer_name}</p>
                                 <p className="product-search__detail">Тип товару: {product.product_type_name}</p>
