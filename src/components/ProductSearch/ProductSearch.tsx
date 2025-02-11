@@ -40,19 +40,25 @@ const ProductSearch: React.FC<ProductSearchProps> = ({ showAddButton = false, on
         const queries = query.toLowerCase().trim().split(/\s+/);
 
         const filtered = products.filter((product) => {
-            return queries.every((word) =>
-                // Must-have fields
-                product.name.toLowerCase().includes(word) ||
-                product.product_type_name.toLowerCase().includes(word) ||
-                product.producer_name.toLowerCase().includes(word) ||
-
-                // Non-must-have fields
-                (product.volume || "").toLowerCase().includes(word) ||
-                (product.strength || "").toLowerCase().includes(word) ||
-                (product.puffs_amount || "").toLowerCase().includes(word) ||
-                (product.resistance || "").toLowerCase().includes(word) ||
-                (product.pod_model || "").toLowerCase().includes(word)
-            )
+            try {
+                return queries.every((word) =>
+                    // Must-have fields
+                    product.product_type_name.toLowerCase().includes(word) ||
+                    product.producer_name.toLowerCase().includes(word) ||
+    
+                    // Non-must-have fields
+                    (product.name || "").toLowerCase().includes(word) ||
+                    (product.volume || "").toLowerCase().includes(word) ||
+                    (product.strength || "").toLowerCase().includes(word) ||
+                    (product.cartridge_model || "").toLowerCase().includes(word) ||
+                    (product.liquid_model || "").toLowerCase().includes(word) ||
+                    (product.puffs_amount || "").toLowerCase().includes(word) ||
+                    (product.resistance || "").toLowerCase().includes(word) ||
+                    (product.pod_model || "").toLowerCase().includes(word)
+                )
+            } catch {
+                console.log(product)
+            }
         }
             
             
