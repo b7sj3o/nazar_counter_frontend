@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ProductTree, Product, ArrivalProducts, OptProducts, ProductSale, SalesSummary } from "../types/product";
+import { ProductTree, Product, ArrivalProducts, OptProducts, ProductSale, SalesSummary, ProductInfo } from "../types/product";
 import {
     ProductForeignKeys,
     ProductForm,
@@ -132,3 +132,27 @@ export const createMultipleProducts = async (products: string): Promise<Response
         return { "message": "Трапилась помилка.", "success": false };
     }
 };
+
+export const updateProduct = async (product: ProductInfo): Promise<ResponseModel> => {
+    try {
+        const response = await api.put(`update-product/${product.id}/`, product);
+        return response.data;
+    } catch (error: any) {
+        if (error.response) {
+            return { "message": error.response.data.message };
+        } 
+        return { "message": "Трапилась помилка.", "success": false };
+    }
+}
+
+export const deleteProduct = async (product_id: number): Promise<ResponseModel> => {
+    try {
+        const response = await api.delete(`delete-product/${product_id}/`);
+        return response.data;
+    } catch (error: any) {
+        if (error.response) {
+            return { "message": error.response.data.message };
+        } 
+        return { "message": "Трапилась помилка.", "success": false };
+    }
+}

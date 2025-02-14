@@ -34,7 +34,7 @@ export interface ProductInfo {
     buy_price: number;
     sell_price: number;
     drop_sell_price: number;
-    resistance?: string;
+    resistance?: string; // Тому що у картриджів немає name
 }
 
 export interface DisposableProduct {

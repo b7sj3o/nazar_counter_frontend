@@ -41,7 +41,6 @@ const ProductSearch: React.FC<ProductSearchProps> = ({ showAddButton = false, on
 
         const filtered = products.filter((product) => {
             try {
-                console.log(product)
                 return queries.every((word) =>
                     // Must-have fields
                     product.product_type_name.toLowerCase().includes(word) ||
