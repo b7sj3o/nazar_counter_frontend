@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ProductTree, Product, ArrivalProducts, OptProducts, ProductSale, SalesSummary, ProductInfo } from "../types/product";
+import { ProductTree, Product, ArrivalProducts, OptProducts, ProductSale, SalesSummary, ProductInfo, EditingProductData, EditingProductsData } from "../types/product";
 import {
     ProductForeignKeys,
     ProductForm,
@@ -52,11 +52,12 @@ export const findProductByBarcode = async (barcode: string): Promise<Result<Prod
 
 
 // subtract x items from y product (you sold them)
-export const addSale = async (product_id: number, amount: number): Promise<MessageResponse> => {
+export const addSale = async (product_id: number, amount: number, price: number): Promise<MessageResponse> => {
     try {
         const response = await api.post<MessageResponse>("add-sale/", {
             product_id,
             amount,
+            price,
         });
         return response.data;
 
@@ -133,9 +134,21 @@ export const createMultipleProducts = async (products: string): Promise<Response
     }
 };
 
-export const updateProduct = async (product: ProductInfo): Promise<ResponseModel> => {
+export const updateProduct = async (product: EditingProductData): Promise<ResponseModel> => {
     try {
         const response = await api.put(`update-product/${product.id}/`, product);
+        return response.data;
+    } catch (error: any) {
+        if (error.response) {
+            return { "message": error.response.data.message };
+        } 
+        return { "message": "Трапилась помилка.", "success": false };
+    }
+}
+
+export const updateProducts = async (data: EditingProductsData): Promise<ResponseModel> => {
+    try {
+        const response = await api.put(`update-products/`, data);
         return response.data;
     } catch (error: any) {
         if (error.response) {

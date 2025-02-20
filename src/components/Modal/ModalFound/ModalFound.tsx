@@ -17,7 +17,7 @@ const ModalFound: React.FC<ModalProps> = ({ product, isOpen, onClose, showModal 
     const handleAddAmount = async () => {
         try {
             if (product.id) {
-                const response = await addSale(product.id, 1);
+                const response = await addSale(product.id, 1, product.sell_price);
                 showModal(response.message);
             }
         } catch (error) {

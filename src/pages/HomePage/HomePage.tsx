@@ -1,20 +1,27 @@
 import React, { useState, useEffect } from "react";
-import { addSale, getProductTree, updateProduct, deleteProduct } from "../../services/api";
+import { addSale, getProductTree, updateProduct, deleteProduct, updateProducts } from "../../services/api";
 import { useModalMessage } from "../../context/ModalMessageContext";
-import {
-    ProductTree,
-    ProductInfo,
-} from "../../types/product";
+import { ProductTree, ProductInfo } from "../../types/product";
 import ProductSearch from "../../components/ProductSearch/ProductSearch";
+import ModalUpdate, { UPDATES } from "../../components/Modal/ModalUpdate/ModalUpdate";
 import "./HomePage.scss";
-import { ResponseModel } from "../../types/product-form";
+import { Link } from "react-router-dom";
+
+
+interface EditingProductState {
+    product?: ProductInfo | ProductInfo[];
+    type?: "single" | "row" | "sale";
+    buy_price?: number;
+    sell_price?: number;
+    drop_sell_price?: number;
+}
 
 const HomePage: React.FC = () => {
     const [productTree, setProductTree] = useState<ProductTree>({});
     const [path, setPath] = useState<string[]>([]);
     const [productsTriggered, setProductsTriggered] = useState(false);
-    const [editingProduct, setEditingProduct] = useState<ProductInfo | null>(null);
-    const [editingProductRow, setEditingProductRow] = useState<ProductInfo[] | null>(null);
+    const [editingProduct, setEditingProduct] = useState<EditingProductState>({});
+    const [showVersion, setShowVersion] = useState(false);
     const { showModal } = useModalMessage();
 
     useEffect(() => {
@@ -23,11 +30,56 @@ const HomePage: React.FC = () => {
                 const fetchedProducts = await getProductTree();
                 setProductTree(fetchedProducts);
             } catch (error) {
-                console.error("Error loading data:", error);
+                showModal("Помилка завантаження даних. Скоріш за все, сервер не відповідає. Спробуйте пізніше.");
             }
         };
         fetchData();
     }, [productsTriggered]);
+
+    // ======= HANDLERS =======
+
+    const handleItemClick = (key: string) => setPath([...path, key]);
+    const handleGoBack = () => setPath(path.slice(0, -1));
+    const handleGoHome = () => setPath([]);
+
+    const handleAddSale = async (productId: number, amount: number = 1, price: number) => {
+        try {
+            if (productId) {
+                const response = await addSale(productId, amount, price);
+                showModal(response.message);
+                setProductsTriggered(!productsTriggered);
+            }
+        } catch (error) {
+            showModal("Помилка при додаванні продажу. Спробуйте ще раз.");
+        }
+    };
+
+    const handleEditProductChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (editingProduct.product && !Array.isArray(editingProduct.product)) {
+            setEditingProduct({
+                ...editingProduct,
+                product: {
+                    ...editingProduct.product,
+                    [e.target.name]: parseInt(e.target.value)
+                }
+            });
+        } else if (editingProduct.product && Array.isArray(editingProduct.product)) {
+            setEditingProduct({
+                ...editingProduct,
+                [e.target.name]: parseInt(e.target.value)
+
+            });
+        }
+    };
+
+    // ======= HELPERS =======
+    
+    const moveToLevel = (key: string) => {
+        const index = path.indexOf(key);
+        setPath(path.slice(0, index + 1));
+    };
+
+    const closeEditProduct = () => setEditingProduct({});
 
     const getCurrentLevel = () => {
         let currentLevel: any = productTree;
@@ -39,17 +91,58 @@ const HomePage: React.FC = () => {
         return currentLevel;
     };
 
-    const handleItemClick = (key: string) => {
-        setPath([...path, key]);
+    // ======= SUBMIT =======
+
+    const submitEditProduct = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (editingProduct.product) {
+            if (editingProduct.type === "row" && Array.isArray(editingProduct.product)) {
+                const defaultBuyPrice = editingProduct.product[0].buy_price;
+                const defaultSellPrice = editingProduct.product[0].sell_price;
+                const defaultDropSellPrice = editingProduct.product[0].drop_sell_price;
+
+                const ids = editingProduct.product.map((product: ProductInfo) => product.id);
+                const data = {
+                    ids,
+                    buy_price: editingProduct.buy_price || defaultBuyPrice,
+                    sell_price: editingProduct.sell_price || defaultSellPrice,
+                    drop_sell_price: editingProduct.drop_sell_price || defaultDropSellPrice
+                };
+                const response = await updateProducts(data);
+                showModal(response.message);
+                closeEditProduct();
+                setProductsTriggered(!productsTriggered);
+
+            } else if (editingProduct.type === "single" && !Array.isArray(editingProduct.product)) {
+                const response = await updateProduct(editingProduct.product);
+
+                showModal(response.message);
+                closeEditProduct();
+                setProductsTriggered(!productsTriggered);
+            }
+        }
     };
 
-    const handleGoBack = () => {
-        setPath(path.slice(0, -1));
+    const submitDeleteProduct = async () => {
+        if (editingProduct.product && !Array.isArray(editingProduct.product)) {
+            const response = await deleteProduct(editingProduct.product!.id);
+
+            showModal(response.message);
+            setProductsTriggered(!productsTriggered);
+            closeEditProduct();
+        }
     };
 
-    const handleGoHome = () => {
-        setPath([])
-    }
+    // ======= RENDER =======
+
+    const renderCurrentLevel = () => {
+        if (Array.isArray(currentLevel)) {
+            return renderProductList(currentLevel);
+        } else {
+            return renderObject(currentLevel);
+        }
+    };
 
     const renderObject = (currentLevel: any) => {
         return Object.entries(currentLevel).map(([key, value]) => {
@@ -61,7 +154,9 @@ const HomePage: React.FC = () => {
                 >
                     <h3>{key}</h3>
                     {Array.isArray(value) ? (
-                        <div className="product-item-edit" onClick={(e) => {e.stopPropagation(); setEditingProductRow(value)}}>
+                        <div className="product-item-edit" onClick={(e) => {
+                            e.stopPropagation(); setEditingProduct({product: value, type: "row"})
+                        }}>
                             <img src="images/dots.png" alt="" />
                         </div>
                     ) : null}
@@ -75,7 +170,7 @@ const HomePage: React.FC = () => {
             <div className="product-item-container">
                 {currentLevel.map((product: ProductInfo) => (
                     <div key={product.id} className={`product-item ${product.amount === 0 ? "product-item__empty" : ""}`}>
-                        <div className="product-item-edit" onClick={() => setEditingProduct(product)}>
+                        <div className="product-item-edit" onClick={() => setEditingProduct({product, type: "single"})}>
                             <img src="images/dots.png" alt="" />
                         </div>
                         <div className="product-item-details">
@@ -83,8 +178,14 @@ const HomePage: React.FC = () => {
                             <p>Кількість: {product.amount}</p>
                             <p>Ціна: {product.sell_price}</p>
                             <br />
-                            <button onClick={() => handleAddSale(product)} disabled={product.amount === 0}>
-                                Добавити продажу
+                            <button onClick={() => handleAddSale(product.id, 1, product.sell_price)} disabled={product.amount === 0}>
+                                Продати одну
+                            </button>
+                            <button onClick={() => handleAddSale(product.id, 1, product.drop_sell_price)} disabled={product.amount === 0}>
+                                Продати одну дроп
+                            </button>
+                            <button onClick={() => setEditingProduct({product: {...product, amount: 1}, type: "sale"})} disabled={product.amount === 0}>
+                                Кастом продажа
                             </button>
                         </div>
                         
@@ -94,135 +195,98 @@ const HomePage: React.FC = () => {
         );
     };
 
+    const renderSaleEdit = (product: ProductInfo) => (
+        <div className="product-edit-container" onClick={closeEditProduct}>
+            <div className="product-edit" onClick={(e) => e.stopPropagation()}>
+                <h3>Добавити продажу</h3>
+                <img src="images/close.png" alt="Close" className="product-edit-close" onClick={closeEditProduct} />
+                <form onSubmit={(e) => {e.preventDefault(); handleAddSale(product.id, product.amount, product.sell_price)}}>
+                    <div className="form-group">
+                        <label htmlFor="amount">Кількість</label>
+                        <input type="text" name="amount" placeholder="Кількість" defaultValue={1} onChange={handleEditProductChange} />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="sell_price">Ціна продажу</label>
+                        <input type="text" name="sell_price" placeholder="Ціна продажу" defaultValue={product.sell_price} onChange={handleEditProductChange} />
+                    </div>
+                    <button type="submit" className="product-edit-submit">Добавити продажу</button>
+                </form>
+            </div>
+        </div>
+    );
+    
+    const renderSingleEdit = (product: ProductInfo) => (
+        <div className="product-edit-container" onClick={closeEditProduct}>
+            <div className="product-edit" onClick={(e) => e.stopPropagation()}>
+                <h3>Редагувати продукт</h3>
+                <img src="images/close.png" alt="Close" className="product-edit-close" onClick={closeEditProduct} />
+                <form onSubmit={submitEditProduct}>
+                    <div className="form-group">
+                        <label htmlFor="amount">Кількість</label>
+                        <input type="text" name="amount" placeholder="Кількість" defaultValue={product.amount} onChange={handleEditProductChange} />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="buy_price">Ціна закупівлі</label>
+                        <input type="text" name="buy_price" placeholder="Ціна закупівлі" defaultValue={product.buy_price} onChange={handleEditProductChange} />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="sell_price">Ціна продажу</label>
+                        <input type="text" name="sell_price" placeholder="Ціна продажу" defaultValue={product.sell_price} onChange={handleEditProductChange} />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="drop_sell_price">Ціна продажу дроп</label>
+                        <input type="text" name="drop_sell_price" placeholder="Ціна продажу дроп" defaultValue={product.drop_sell_price} onChange={handleEditProductChange} />
+                    </div>
+                    <button type="submit" className="product-edit-submit">Редагувати продукт</button>
+                    <button type="button" className="product-edit-delete" onClick={submitDeleteProduct}>Видалити продукт</button>
+                </form>
+            </div>
+        </div>
+    );
+    
+    const renderRowEdit = (product: ProductInfo) => (
+        <div className="product-edit-container" onClick={closeEditProduct}>
+            <div className="product-edit" onClick={(e) => e.stopPropagation()}>
+                <h3>Редагувати лінійку продуктів</h3>
+                <img src="images/close.png" alt="Close" className="product-edit-close" onClick={closeEditProduct} />
+                <form onSubmit={submitEditProduct}>
+                    <div className="form-group">
+                        <label htmlFor="buy_price">Ціна закупівлі</label>
+                        <input type="text" name="buy_price" placeholder="Ціна закупівлі" defaultValue={product.buy_price} onChange={handleEditProductChange} />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="sell_price">Ціна продажу</label>
+                        <input type="text" name="sell_price" placeholder="Ціна продажу" defaultValue={product.sell_price} onChange={handleEditProductChange} />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="drop_sell_price">Ціна продажу дроп</label>
+                        <input type="text" name="drop_sell_price" placeholder="Ціна продажу дроп" defaultValue={product.drop_sell_price} onChange={handleEditProductChange} />
+                    </div>
+                    <button type="submit" className="product-edit-submit">Редагувати продукт</button>
+                </form>
+            </div>
+        </div>
+    );
+    
     const renderEditProduct = () => {
-        if (editingProduct) {
-            return (
-                <div className="product-edit-container" onClick={closeEditProduct}>
-                    <div className="product-edit" onClick={(e) => e.stopPropagation()}>
-                        <h3>Редагувати продукт</h3>
-                        <img src="images/close.png" alt="Close" className="product-edit-close" onClick={closeEditProduct} />
-                        <form onSubmit={submitEditProduct}>
-                            <div className="form-group">
-                                <label htmlFor="amount">Кількість</label>
-                                <input type="text" name="amount" placeholder="Кількість" defaultValue={editingProduct.amount} onChange={handleEditProductChange}/>
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="buy_price">Ціна закупівлі</label>
-                                <input type="text" name="buy_price" placeholder="Ціна закупівлі" defaultValue={editingProduct.buy_price} onChange={handleEditProductChange}/>
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="sell_price">Ціна продажу</label>
-                                <input type="text" name="sell_price" placeholder="Ціна продажу" defaultValue={editingProduct.sell_price} onChange={handleEditProductChange}/>
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="drop_sell_price">Ціна продажу дроп</label>
-                                <input type="text" name="drop_sell_price" placeholder="Ціна продажу дроп" defaultValue={editingProduct.drop_sell_price} onChange={handleEditProductChange}/>
-                            </div>
-                            <button type="submit" className="product-edit-submit">Редагувати продукт</button>
-                            <button type="button" className="product-edit-delete" onClick={submitDeleteProduct}>Видалити продукт</button>
-                        </form>
-                    </div>
-                </div>
-            );
-        } else if (editingProductRow) {
-            return (
-                <div className="product-edit-container" onClick={closeEditProduct}>
-                    <div className="product-edit" onClick={(e) => e.stopPropagation()}>
-                        <h3>Редагувати лінійку продуктів</h3>
-                        <img src="images/close.png" alt="Close" className="product-edit-close" onClick={closeEditProduct} />
-                        <form onSubmit={submitEditProduct}>
-                            <div className="form-group">
-                                <label htmlFor="buy_price">Ціна закупівлі</label>
-                                <input type="text" name="buy_price" placeholder="Ціна закупівлі" defaultValue={editingProductRow[0].buy_price} onChange={handleEditProductChange}/>
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="sell_price">Ціна продажу</label>
-                                <input type="text" name="sell_price" placeholder="Ціна продажу" defaultValue={editingProductRow[0].sell_price} onChange={handleEditProductChange}/>
-                            </div>
-                            <div className="form-group">
-                                <label htmlFor="drop_sell_price">Ціна продажу дроп</label>
-                                <input type="text" name="drop_sell_price" placeholder="Ціна продажу дроп" defaultValue={editingProductRow[0].drop_sell_price} onChange={handleEditProductChange}/>
-                            </div>
-                            <button type="submit" className="product-edit-submit">Редагувати продукт</button>
-                        </form>
-                    </div>
-                </div>
-            );
-        }
-    }
-
-    const closeEditProduct = () => {
-        setEditingProduct(null);
-        setEditingProductRow(null);
-    }
-
-    const handleEditProductChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (editingProduct) {
-            setEditingProduct({
-                ...editingProduct,
-                [e.target.name]: e.target.value
-            });
-        }
-    };
-
-    const submitEditProduct = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (editingProduct) {
-            const response = await updateProduct(editingProduct);
-            showModal(response.message);
-        } else if (editingProductRow) {
-            // const response = await updateProduct();
-            // showModal(response.message);
-            showModal("Я ще це не доробив!")
-
-        }
-
-        setProductsTriggered(!productsTriggered);
-        setEditingProduct(null);
-        setEditingProductRow(null);
-        setPath([]);
-    }
-
-    const submitDeleteProduct = async () => {
-        const response = await deleteProduct(editingProduct!.id);
-        setProductsTriggered(!productsTriggered);
-        setEditingProduct(null);
-        setEditingProductRow(null);
-        setPath([]);
-        showModal(response.message);
-    }
-
-    const handleAddSale = async (product: ProductInfo) => {
-        try {
-            if (product.id) {
-                const response = await addSale(product.id, 1);
-                showModal(response.message);
-                setProductsTriggered(!productsTriggered);
-            }
-        } catch (error) {
-            console.error("Error loading data:", error);
-        }
-    };
-
-    const renderCurrentLevel = () => {
-        if (Array.isArray(currentLevel)) {
-            return renderProductList(currentLevel);
+        if (!editingProduct.product) return null;
+    
+        if (!Array.isArray(editingProduct.product)) {
+            if (editingProduct.type === "sale") return renderSaleEdit(editingProduct.product);
+            if (editingProduct.type === "single") return renderSingleEdit(editingProduct.product);
         } else {
-            return renderObject(currentLevel);
+            return renderRowEdit(editingProduct.product[0]);
         }
+    
+        return null;
     };
-
-    const moveToLevel = (key: string) => {
-        const index = path.indexOf(key);
-        setPath(path.slice(0, index + 1));
-    };
-
 
     const currentLevel = getCurrentLevel();
 
     return (
         <div className="container">
             <ProductSearch />
+            <ModalUpdate />
             <div className="products-container">
                 <h2 className="title">Товар</h2>
                 
@@ -249,7 +313,9 @@ const HomePage: React.FC = () => {
                 )}
                 <div className="buttons-container">{renderCurrentLevel()}</div>
             </div>
-            {renderEditProduct()}
+            {editingProduct && renderEditProduct()}
+
+            <small className="version"><Link to="/versions">v.{UPDATES[UPDATES.length-1].version}</Link></small>
         </div>
         
     );

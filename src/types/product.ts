@@ -37,6 +37,21 @@ export interface ProductInfo {
     resistance?: string; // Тому що у картриджів немає name
 }
 
+export interface EditingProductData {
+    id: number;
+    amount?: number;
+    buy_price?: number;
+    sell_price?: number;
+    drop_sell_price?: number;
+}
+
+export interface EditingProductsData {
+    ids: number[];
+    buy_price: number;
+    sell_price: number;
+    drop_sell_price: number;
+}
+
 export interface DisposableProduct {
     [puffsAmount: string]: ProductInfo[];
 }

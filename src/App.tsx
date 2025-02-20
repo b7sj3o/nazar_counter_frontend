@@ -11,6 +11,7 @@ import ProductArrivalPage from './pages/ProductArrivalPage/ProductArrivalPage';
 import ProductOptPage from './pages/ProductOptPage/ProductOptPage';
 import SettingsPage from './pages/SettingsPage/SettingsPage';
 import AnalyticsPage from './pages/AnalyticsPage/AnalyticsPage';
+import VersionsPage from './pages/VersionsPage/VersionsPage';
 
 // App.tsx — Основний компонент програми. Це компонент верхнього рівня, з якого починається структура вашого додатку. 
 // Зазвичай він містить інші компоненти і є "вхідною точкою" програми.
@@ -30,6 +31,7 @@ const App: React.FC = () => {
                   <Route path="/add-opt" element={<ProductOptPage />} />
                   <Route path="/settings" element={<SettingsPage />} />
                   <Route path="/analytics" element={<AnalyticsPage />} />
+                  <Route path="/versions" element={<VersionsPage />} />
               </Routes>
           </Layout>
         </div>
