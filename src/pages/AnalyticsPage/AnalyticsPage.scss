@@ -17,6 +17,12 @@ h2 {
     display: flex;
     flex-direction: column;
     row-gap: 15px;
+
+    &-date {
+        text-align: center;
+        font-size: 25px;
+        margin: 10px 0;
+    }
 }
 
 .sale-item {
