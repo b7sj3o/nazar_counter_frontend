@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import "./ModalUpdate.scss";
-import { version } from "os";
 
 export const UPDATES = [
     {

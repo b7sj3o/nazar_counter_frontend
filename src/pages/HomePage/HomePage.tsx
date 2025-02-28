@@ -22,7 +22,6 @@ const HomePage: React.FC = () => {
     const [path, setPath] = useState<string[]>([]);
     const [productsTriggered, setProductsTriggered] = useState(false);
     const [editingProduct, setEditingProduct] = useState<EditingProductState>({});
-    const [showVersion, setShowVersion] = useState(false);
     const { showModal } = useModalMessage();
 
     useEffect(() => {

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ProductTree, Product, ArrivalProducts, OptProducts, ProductSale, SalesSummary, ProductInfo, EditingProductData, EditingProductsData } from "../types/product";
+import { ProductTree, Product, ArrivalProducts, OptProducts, ProductSale, EditingProductData, EditingProductsData } from "../types/product";
 import {
     ProductForeignKeys,
     ProductForm,
