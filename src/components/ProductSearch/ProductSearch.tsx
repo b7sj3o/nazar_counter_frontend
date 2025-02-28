@@ -3,17 +3,17 @@ import React, { useState, useEffect } from "react";
 import "./ProductSearch.scss";
 import { Product, ProductSearchProps } from "../../types/product";
 import { useSelector } from "react-redux";
-import { getProducts } from "../../services/api";
+import { addSale, getProducts } from "../../services/api";
+import { useModalMessage } from "../../context/ModalMessageContext";
 
 
 
-const ProductSearch: React.FC<ProductSearchProps> = ({ showAddButton = false, onProductAdd }) => {
+const ProductSearch: React.FC<ProductSearchProps> = ({ showAddSaleButtons = true, onProductAdd }) => {
     const [products, setProducts] = useState<Product[]>([]);
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [inputQuery, setInputQuery] = useState<string>("");
-    
+    const { showModal } = useModalMessage();
     const settings = useSelector((state: any) => state.settings);
-    
     const [isSearchVisible, setSearchVisibility] = useState(settings.isSearchVisible)
 
     useEffect(() => {
@@ -22,6 +22,7 @@ const ProductSearch: React.FC<ProductSearchProps> = ({ showAddButton = false, on
                 const fetchedProducts = await getProducts();
                 setProducts(fetchedProducts);
                 setFilteredProducts(fetchedProducts);
+                handleInputChange(inputQuery);
             } catch (error) {
                 console.error("Error loading data:", error);
             }
@@ -70,6 +71,77 @@ const ProductSearch: React.FC<ProductSearchProps> = ({ showAddButton = false, on
         setSearchVisibility(!isSearchVisible);
     }
 
+    // TODO: Move it to utils or hooks
+    const handleAddSale = async (productId: number, amount: number = 1, price: number) => {
+        try {
+            if (productId) {
+                const response = await addSale(productId, amount, price);
+                showModal(response.message);
+                if (response.success) {
+                    setFilteredProducts(filteredProducts.map((product) => {
+                        if (product.id === productId) {
+                            return {
+                                ...product,
+                                amount: product.amount - amount
+                            };
+                        }
+                        return product;
+                    }
+                    ));
+                }
+            }
+        } catch (error) {
+            showModal("Помилка при додаванні продажу. Спробуйте ще раз.");
+        }
+    };
+
+    const renderProducts = () => {
+        return (inputQuery.length >= 1 ? filteredProducts : products).map((product) => (
+            <li key={product.id} className="product-search__item">
+                <h3 className="product-search__name">
+                    {product.name || product.cartridge_model_name} {product.resistance_amount ? `- ${product.resistance_amount}` : ""}
+                </h3>
+                <p className="product-search__detail">К-сть: {product.amount}</p>
+                <p className="product-search__detail">Виробник: {product.producer_name}</p>
+                <p className="product-search__detail">Тип товару: {product.product_type_name}</p>
+
+                <div className="product-search__btns">
+                    <button
+                        onClick={() => handleAddSale(product.id, 1, product.sell_price)}
+                        className="product-search__add-button">
+                        Продаж
+                    </button>
+                    <button
+                        onClick={() => handleAddSale(product.id, 1, product.drop_sell_price)}
+                        className="product-search__add-button">
+                        Продаж (дроп)
+                    </button>
+                </div>
+            </li>
+        ));
+    };
+
+    const renderProductsList = () => {
+        return (inputQuery.length >= 1 ? filteredProducts : products).map((product) => (
+            <li key={product.id} className="product-search__item">
+                <h3 className="product-search__name">
+                    {product.name || product.cartridge_model_name} {product.resistance_amount ? `- ${product.resistance_amount}` : ""}
+                </h3>
+                <p className="product-search__detail">К-сть: {product.amount}</p>
+                <p className="product-search__detail">Виробник: {product.producer_name}</p>
+                <p className="product-search__detail">Тип товару: {product.product_type_name}</p>
+
+                {onProductAdd && (
+                    <button
+                        onClick={() => onProductAdd(product)}
+                        className="product-search__add-button" style={{ marginTop: "10px" }}>
+                        +
+                    </button>    
+                )}
+            </li>
+        ));
+    };
+
     return (
         <div className="product-search">
             <div className="product-search__header">
@@ -90,31 +162,17 @@ const ProductSearch: React.FC<ProductSearchProps> = ({ showAddButton = false, on
 
             <ul className="product-search__results">
                 {isSearchVisible ? (
-                    // Якщо форма схована, нічого не показувати
                     inputQuery.length >= 1 && filteredProducts.length === 0 ? (
-                        // Якщо введений запит, але немає результатів
                         <h1>Not found</h1>
                     ) : (
-                        // Якщо запит є або його немає, показувати відповідні продукти
-                        (inputQuery.length >= 1 ? filteredProducts : products).map((product) => (
-                            <li key={product.id} className="product-search__item">
-                                <h3 className="product-search__name">{product.name || product.resistance_amount}</h3>
-                                <p className="product-search__detail">К-сть: {product.amount}</p>
-                                <p className="product-search__detail">Виробник: {product.producer_name}</p>
-                                <p className="product-search__detail">Тип товару: {product.product_type_name}</p>
-                                {showAddButton && (
-                                  <button
-                                      onClick={() => onProductAdd?.(product)}
-                                      className="product-search__add-button">
-                                      +
-                                  </button>
-                                )}
-                            </li>
-                        ))
+                        showAddSaleButtons ? (
+                            renderProducts()
+                        ) : (
+                            renderProductsList()
+                        )
                     )
-                ):null}
+                ) : null}
             </ul>
-            
         </div>
     );
 };

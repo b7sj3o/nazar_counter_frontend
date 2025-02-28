@@ -6,6 +6,7 @@ import ProductSearch from "../../components/ProductSearch/ProductSearch";
 import ModalUpdate, { UPDATES } from "../../components/Modal/ModalUpdate/ModalUpdate";
 import "./HomePage.scss";
 import { Link } from "react-router-dom";
+import { ProductEditModal } from "../../components/ProductEditModal/ProductEditMdal";
 
 
 interface EditingProductState {
@@ -42,6 +43,7 @@ const HomePage: React.FC = () => {
     const handleGoBack = () => setPath(path.slice(0, -1));
     const handleGoHome = () => setPath([]);
 
+    // TODO: Move it to utils or hooks
     const handleAddSale = async (productId: number, amount: number = 1, price: number) => {
         try {
             if (productId) {
@@ -79,7 +81,10 @@ const HomePage: React.FC = () => {
         setPath(path.slice(0, index + 1));
     };
 
-    const closeEditProduct = () => setEditingProduct({});
+    const closeEditProduct = () => {
+        setEditingProduct({});
+        document.body.style.overflow = 'auto';
+    };
 
     const getCurrentLevel = () => {
         let currentLevel: any = productTree;
@@ -145,6 +150,8 @@ const HomePage: React.FC = () => {
     };
 
     const renderObject = (currentLevel: any) => {
+        if (!currentLevel) return null;
+        
         return Object.entries(currentLevel).map(([key, value]) => {
             return (
                 <div
@@ -196,81 +203,80 @@ const HomePage: React.FC = () => {
     };
 
     const renderSaleEdit = (product: ProductInfo) => (
-        <div className="product-edit-container" onClick={closeEditProduct}>
-            <div className="product-edit" onClick={(e) => e.stopPropagation()}>
-                <h3>Добавити продажу</h3>
-                <img src="images/close.png" alt="Close" className="product-edit-close" onClick={closeEditProduct} />
-                <form onSubmit={(e) => {e.preventDefault(); handleAddSale(product.id, product.amount, product.sell_price)}}>
-                    <div className="form-group">
-                        <label htmlFor="amount">Кількість</label>
-                        <input type="text" name="amount" placeholder="Кількість" defaultValue={1} onChange={handleEditProductChange} />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="sell_price">Ціна продажу</label>
-                        <input type="text" name="sell_price" placeholder="Ціна продажу" defaultValue={product.sell_price} onChange={handleEditProductChange} />
-                    </div>
-                    <button type="submit" className="product-edit-submit">Добавити продажу</button>
-                </form>
-            </div>
-        </div>
+        <ProductEditModal 
+            title="Добавити продажу" 
+            onClose={closeEditProduct} 
+        >
+            <form onSubmit={(e) => { e.preventDefault(); handleAddSale(product.id, product.amount, product.sell_price); closeEditProduct(); }}>
+                <div className="form-group">
+                    <label htmlFor="amount">Кількість</label>
+                    <input type="text" name="amount" placeholder="Кількість" defaultValue={1} onChange={handleEditProductChange} />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="sell_price">Ціна продажу</label>
+                    <input type="text" name="sell_price" placeholder="Ціна продажу" defaultValue={product.sell_price} onChange={handleEditProductChange} />
+                </div>
+                <button type="submit" className="product-edit-submit">Добавити продажу</button>
+            </form>
+        </ProductEditModal>
     );
     
     const renderSingleEdit = (product: ProductInfo) => (
-        <div className="product-edit-container" onClick={closeEditProduct}>
-            <div className="product-edit" onClick={(e) => e.stopPropagation()}>
-                <h3>Редагувати продукт</h3>
-                <img src="images/close.png" alt="Close" className="product-edit-close" onClick={closeEditProduct} />
-                <form onSubmit={submitEditProduct}>
-                    <div className="form-group">
-                        <label htmlFor="amount">Кількість</label>
-                        <input type="text" name="amount" placeholder="Кількість" defaultValue={product.amount} onChange={handleEditProductChange} />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="buy_price">Ціна закупівлі</label>
-                        <input type="text" name="buy_price" placeholder="Ціна закупівлі" defaultValue={product.buy_price} onChange={handleEditProductChange} />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="sell_price">Ціна продажу</label>
-                        <input type="text" name="sell_price" placeholder="Ціна продажу" defaultValue={product.sell_price} onChange={handleEditProductChange} />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="drop_sell_price">Ціна продажу дроп</label>
-                        <input type="text" name="drop_sell_price" placeholder="Ціна продажу дроп" defaultValue={product.drop_sell_price} onChange={handleEditProductChange} />
-                    </div>
-                    <button type="submit" className="product-edit-submit">Редагувати продукт</button>
-                    <button type="button" className="product-edit-delete" onClick={submitDeleteProduct}>Видалити продукт</button>
-                </form>
-            </div>
-        </div>
+        <ProductEditModal 
+            title="Редагувати продукт" 
+            onClose={closeEditProduct} 
+        >
+            <form onSubmit={submitEditProduct}>
+                <div className="form-group">
+                    <label htmlFor="amount">Кількість</label>
+                    <input type="text" name="amount" placeholder="Кількість" defaultValue={product.amount} onChange={handleEditProductChange} />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="buy_price">Ціна закупівлі</label>
+                    <input type="text" name="buy_price" placeholder="Ціна закупівлі" defaultValue={product.buy_price} onChange={handleEditProductChange} />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="sell_price">Ціна продажу</label>
+                    <input type="text" name="sell_price" placeholder="Ціна продажу" defaultValue={product.sell_price} onChange={handleEditProductChange} />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="drop_sell_price">Ціна продажу дроп</label>
+                    <input type="text" name="drop_sell_price" placeholder="Ціна продажу дроп" defaultValue={product.drop_sell_price} onChange={handleEditProductChange} />
+                </div>
+                <button type="submit" className="product-edit-submit">Редагувати продукт</button>
+                <button type="button" className="product-edit-delete" onClick={submitDeleteProduct}>Видалити продукт</button>
+            </form>
+        </ProductEditModal>
     );
     
     const renderRowEdit = (product: ProductInfo) => (
-        <div className="product-edit-container" onClick={closeEditProduct}>
-            <div className="product-edit" onClick={(e) => e.stopPropagation()}>
-                <h3>Редагувати лінійку продуктів</h3>
-                <img src="images/close.png" alt="Close" className="product-edit-close" onClick={closeEditProduct} />
-                <form onSubmit={submitEditProduct}>
-                    <div className="form-group">
-                        <label htmlFor="buy_price">Ціна закупівлі</label>
-                        <input type="text" name="buy_price" placeholder="Ціна закупівлі" defaultValue={product.buy_price} onChange={handleEditProductChange} />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="sell_price">Ціна продажу</label>
-                        <input type="text" name="sell_price" placeholder="Ціна продажу" defaultValue={product.sell_price} onChange={handleEditProductChange} />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="drop_sell_price">Ціна продажу дроп</label>
-                        <input type="text" name="drop_sell_price" placeholder="Ціна продажу дроп" defaultValue={product.drop_sell_price} onChange={handleEditProductChange} />
-                    </div>
-                    <button type="submit" className="product-edit-submit">Редагувати продукт</button>
-                </form>
-            </div>
-        </div>
+        <ProductEditModal 
+            title="Редагувати лінійку продуктів" 
+            onClose={closeEditProduct} 
+        >
+            <form onSubmit={submitEditProduct}>
+                <div className="form-group">
+                    <label htmlFor="buy_price">Ціна закупівлі</label>
+                    <input type="text" name="buy_price" placeholder="Ціна закупівлі" defaultValue={product.buy_price} onChange={handleEditProductChange} />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="sell_price">Ціна продажу</label>
+                    <input type="text" name="sell_price" placeholder="Ціна продажу" defaultValue={product.sell_price} onChange={handleEditProductChange} />
+                </div>
+                <div className="form-group">
+                    <label htmlFor="drop_sell_price">Ціна продажу дроп</label>
+                    <input type="text" name="drop_sell_price" placeholder="Ціна продажу дроп" defaultValue={product.drop_sell_price} onChange={handleEditProductChange} />
+                </div>
+                <button type="submit" className="product-edit-submit">Редагувати продукт</button>
+            </form>
+        </ProductEditModal>
     );
     
     const renderEditProduct = () => {
         if (!editingProduct.product) return null;
-    
+        
+        document.body.style.overflow = 'hidden';
+
         if (!Array.isArray(editingProduct.product)) {
             if (editingProduct.type === "sale") return renderSaleEdit(editingProduct.product);
             if (editingProduct.type === "single") return renderSingleEdit(editingProduct.product);

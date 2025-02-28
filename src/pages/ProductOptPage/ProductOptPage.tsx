@@ -84,7 +84,7 @@ const ProductOptPage: React.FC = () => {
     
                 {/* Product Search */}
                 <ProductSearch 
-                    showAddButton={true}
+                    showAddSaleButtons={false}
                     onProductAdd={handleAddProduct} 
                 />
     

@@ -93,7 +93,7 @@ export interface ProductTree {
 }
 
 export interface ProductSearchProps {
-    showAddButton?: boolean;
+    showAddSaleButtons?: boolean;
     onProductAdd?: (product: Product) => void;
 }
 

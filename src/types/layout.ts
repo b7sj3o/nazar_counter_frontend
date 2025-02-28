@@ -4,4 +4,5 @@ export interface LayoutProps {
 
 export interface MessageResponse {
     message: string;
+    success?: boolean;
 }

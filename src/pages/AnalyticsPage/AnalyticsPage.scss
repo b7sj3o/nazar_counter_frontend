@@ -13,62 +13,44 @@ h2 {
     color: #333;
 }
 
-.filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    margin-bottom: 30px;
-
-    input {
-        padding: 10px;
-        font-size: 1rem;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        outline: none;
-        width: 200px;
-    }
-
-    input[type="date"] {
-        width: 200px;
-    }
-
-    input[type="text"] {
-        width: 300px;
-    }
-}
-
-.filters input:focus {
-    border-color: #007bff;
-}
-
-.summary {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 40px;
-    font-size: 1.25rem;
-
-    h3 {
-        margin: 0;
-        color: #007bff;
-    }
-}
-
 .sales-list {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
+    display: flex;
+    flex-direction: column;
+    row-gap: 15px;
 }
 
 .sale-item {
+    display: flex;
+    justify-content: space-between;
     background-color: #f9f9f9;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
 
+    &-delete {
+        cursor: pointer;
+        color: #fff;
+        background-color: #ff4d4d;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        padding: 8px 16px;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+
+        &:hover {
+            background-color: #ff1a1a;
+            transform: scale(1.05);
+        }
+
+        &:active {
+            background-color: #e60000;
+            transform: scale(0.95);
+        }
+    }
+
     &:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        background-color: #ffffff99;
     }
 
     h4 {
@@ -109,3 +91,18 @@ h2 {
         background-color: #0056b3;
     }
 }
+
+.sale-details {
+    margin-top: 20px;
+    color: #fff;
+
+    p {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+
+    p:last-child {
+        margin-bottom: 0;
+    }
+}
+

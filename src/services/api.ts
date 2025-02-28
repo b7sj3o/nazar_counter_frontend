@@ -100,27 +100,10 @@ export const getProductTree = async (): Promise<ProductTree> => {
 };
 
 
-export const getFilteredSales = async (filters: any): Promise<ProductSale[]> => {
-    try {
-        const response = await api.get("product-sales/", {
-            params: filters,
-        });
-        return response.data;
-    } catch (error: any) {
-        console.error('Error: ', error);
-        return [];
-    }
-};
-
-export const getSalesSummary = async (): Promise<SalesSummary> => {
-    try {
-        const response = await api.get('sales-summary/');
-        return response.data;
-    } catch (error) {
-        console.error('Error: ', error);
-        return { total_revenue: 0, total_amount: 0, total_earning: 0 };
-    }
-};
+export const getSales = async (): Promise<ProductSale[]> => {
+    const response = await api.get<ProductSale[]>("get-sales/");
+    return response.data;
+}
 
 export const createMultipleProducts = async (products: string): Promise<ResponseModel> => {
     try {
