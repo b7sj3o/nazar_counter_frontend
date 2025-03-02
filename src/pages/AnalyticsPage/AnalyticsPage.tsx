@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getSales } from '../../services/api';
+import { deleteSale, getSales } from '../../services/api';
 import { ProductSale } from '../../types/product';
 import "./AnalyticsPage.scss";
 import { useModalMessage } from '../../context/ModalMessageContext';
@@ -24,8 +24,22 @@ const AnalyticsPage: React.FC = () => {
         setShowAllSales(!showAllSales);
     };
 
-    const handleRemoveSale = (id: number) => {
-        showModal("Ця функція ще не реалізована");
+    const handleRemoveSale = async (id: number) => {
+        try {
+            const response = await deleteSale(id);
+            if (response.success) {
+                const saleBlock = document.querySelector(`#sale_${id}`) as HTMLElement;
+                saleBlock.style.animation = 'fadeOout 0.5s forwards';
+                setTimeout(() => {
+                    setSales(sales.filter(sale => sale.id !== id));
+                }, 500);
+            } 
+            showModal(response.message);
+        } catch (e){
+            console.log(e)
+            showModal('Трапилась помилка. Спробуйте ще раз.');
+        }
+
     }
 
     const renderSaleDetails = () => {
@@ -60,7 +74,6 @@ const AnalyticsPage: React.FC = () => {
     };
 
     const groupedSales = groupSalesByDate(sales);
-    console.log(groupedSales)
 
     return (
         <div className="sales-analytics-container">
@@ -71,9 +84,9 @@ const AnalyticsPage: React.FC = () => {
                     <div key={date} className="sales-list">
                         <h3 className='sales-list-date'>{date}</h3>
                         {(showAllSales ? salesOnDate : salesOnDate.slice(0, 10)).map((sale) => (
-                            <div key={sale.id} className="sale-item" onClick={() => setSaleDetails(sale)}>
-                                <h4>{sale.product_name} - {sale.producer_name} - {sale.product_type}</h4>
-                                <button className="sale-item-delete" onClick={(e) => {e.stopPropagation(); handleRemoveSale(sale.id)}}>Видалити</button>
+                            <div key={sale.id} className="sale-item" id={`sale_${sale.id}`} onClick={() => setSaleDetails(sale)}>
+                                <h4>{sale.product_name} - {sale.producer_name} - {sale.product_type} <span className='red'>{sale.amount}</span></h4>
+                                <button className="sale-item-delete" onClick={(e) => {e.stopPropagation(); e.currentTarget.disabled = true; handleRemoveSale(sale.id)}}>Видалити</button>
                             </div>
                         ))}
                     </div>

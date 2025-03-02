@@ -1,0 +1,39 @@
+$buttonSize: 50px;
+
+.move-to-top {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: $buttonSize;
+    height: $buttonSize;
+    background-color: #4a90e2;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    img {
+        width: 20px;
+        height: 20px;
+    }
+
+}
+
+@keyframes moveRight {
+    0% {
+        right: 20px;
+    }
+    100% {
+        right: calc($buttonSize * (-1) + 10px);
+    }
+}
+
+@keyframes moveLeft {
+    0% {
+        right: calc($buttonSize * (-1) + 10px);
+    }
+    100% {
+        right: 20px;
+    }
+}

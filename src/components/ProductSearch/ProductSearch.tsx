@@ -58,7 +58,6 @@ const ProductSearch: React.FC<ProductSearchProps> = ({ showAddSaleButtons = true
                     (product.pod_model_name || "").toLowerCase().includes(word)
                 )
             } catch {
-                console.log(product)
             }
         }
             

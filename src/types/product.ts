@@ -20,7 +20,7 @@ export interface Product {
 
 export interface ArrivalProducts {
     id: number;
-    amount: number;
+    quantity: number;
     price: number;
 }
 

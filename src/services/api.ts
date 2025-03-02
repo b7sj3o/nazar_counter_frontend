@@ -17,64 +17,7 @@ const api = axios.create({
 type Result<T, E> = { success: true; data: T } | { success: false; error: E };
 
 
-// add arrival
-export const addArrival = async (products: ArrivalProducts[]): Promise<{ success: boolean, data: string }> => {
-    try {
-        const response = await api.post("add-arrival/", { products });
-        return { success: true, data: response.data };
-    } catch (error: any) {
-        const message = error.response?.data?.message || "An error occurred.";
-        return { success: false, data: message };
-    }
-};
-
-// add opt
-export const addOpt = async (products: OptProducts[]): Promise<{ success: boolean, data: string }> => {
-    try {
-        const response = await api.post("add-opt/", { products });
-        return { success: true, data: response.data };
-    } catch (error: any) {
-        const message = error.response?.data?.message || "An error occurred.";
-        return { success: false, data: message };
-    }
-};
-
-// check if there is a product by given barcode
-export const findProductByBarcode = async (barcode: string): Promise<Result<Product, string>> => {
-    try {
-        const response = await api.get<Product>(`check-barcode?barcode=${barcode}`);
-        return { success: true, data: response.data };
-    } catch (error: any) {
-        const message = error.response?.data?.message || "An error occurred.";
-        return { success: false, error: message };
-    }
-};
-
-
-// subtract x items from y product (you sold them)
-export const addSale = async (product_id: number, amount: number, price: number): Promise<MessageResponse> => {
-    try {
-        const response = await api.post<MessageResponse>("add-sale/", {
-            product_id,
-            amount,
-            price,
-        });
-        return response.data;
-
-    } catch (error: any) {
-        if (error.response) {
-            return { "message": error.response.data.message };
-        }
-        return { "message": "An error occurred." };
-    }
-};
-
-// Create product
-export const createProduct = async (product: ProductForm): Promise<MessageResponse> => {
-    const response = await api.post<MessageResponse>("create-product/", product);
-    return response.data;
-};
-
+// ------- GET -------
 
 // Get all the products
 export const getProducts = async (): Promise<Product[]> => {
@@ -99,11 +42,69 @@ export const getProductTree = async (): Promise<ProductTree> => {
     return response.data;
 };
 
-
 export const getSales = async (): Promise<ProductSale[]> => {
     const response = await api.get<ProductSale[]>("get-sales/");
     return response.data;
 }
+
+// check if there is a product by given barcode
+export const findProductByBarcode = async (barcode: string): Promise<Result<Product, string>> => {
+    try {
+        const response = await api.get<Product>(`check-barcode?barcode=${barcode}`);
+        return { success: true, data: response.data };
+    } catch (error: any) {
+        const message = error.response?.data?.message || "An error occurred.";
+        return { success: false, error: message };
+    }
+};
+
+// ------- CREATE -------
+
+// Create product
+export const createProduct = async (product: ProductForm): Promise<MessageResponse> => {
+    const response = await api.post<MessageResponse>("create-product/", product);
+    return response.data;
+};
+
+// add arrival
+export const addArrival = async (products: ArrivalProducts[]): Promise<{ success: boolean, data: string }> => {
+    try {
+        const response = await api.post("add-arrival/", { products });
+        return { success: true, data: response.data };
+    } catch (error: any) {
+        const message = error.response?.data?.message || "An error occurred.";
+        return { success: false, data: message };
+    }
+};
+
+// add opt
+export const addOpt = async (products: OptProducts[]): Promise<{ success: boolean, data: string }> => {
+    try {
+        const response = await api.post("add-opt/", { products });
+        return { success: true, data: response.data };
+    } catch (error: any) {
+        const message = error.response?.data?.message || "An error occurred.";
+        return { success: false, data: message };
+    }
+};
+
+// subtract x items from y product (you sold them)
+export const addSale = async (product_id: number, amount: number, price: number): Promise<MessageResponse> => {
+    try {
+        const response = await api.post<MessageResponse>("add-sale/", {
+            product_id,
+            amount,
+            price,
+        });
+        return response.data;
+
+    } catch (error: any) {
+        if (error.response) {
+            return { "message": error.response.data.message };
+        }
+        return { "message": "An error occurred." };
+    }
+};
 
 export const createMultipleProducts = async (products: string): Promise<ResponseModel> => {
     try {
@@ -116,6 +117,8 @@ export const createMultipleProducts = async (products: string): Promise<Response
         return { "message": "Трапилась помилка.", "success": false };
     }
 };
+
+// ------- UPDATE -------
 
 export const updateProduct = async (product: EditingProductData): Promise<ResponseModel> => {
     try {
@@ -141,9 +144,23 @@ export const updateProducts = async (data: EditingProductsData): Promise<Respons
     }
 }
 
+// ------- DELETE -------
+
 export const deleteProduct = async (product_id: number): Promise<ResponseModel> => {
     try {
         const response = await api.delete(`delete-product/${product_id}/`);
+        return response.data;
+    } catch (error: any) {
+        if (error.response) {
+            return { "message": error.response.data.message };
+        } 
+        return { "message": "Трапилась помилка.", "success": false };
+    }
+}
+
+export const deleteSale = async (sale_id: number): Promise<ResponseModel> => {
+    try {
+        const response = await api.delete(`delete-sale/${sale_id}/`);
         return response.data;
     } catch (error: any) {
         if (error.response) {

@@ -104,7 +104,6 @@ const CreateProductPage: React.FC = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         try {
-            console.log(formData)
             const response = await createProduct(formData);
             showModal(response.message);
 
