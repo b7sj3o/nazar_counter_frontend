@@ -97,12 +97,12 @@ export interface ProductSearchProps {
     onProductAdd?: (product: Product) => void;
 }
 
-// types/api.ts
 export interface ProductSale {
     id: number;
     product_name: string;
     product_type: string;
     producer_name: string;
+    buy_price: number;
     sell_price: number;
     amount: number;
     date: string;

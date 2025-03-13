@@ -1,21 +1,26 @@
 import axios from "axios";
-import { ProductTree, Product, ArrivalProducts, OptProducts, ProductSale, EditingProductData, EditingProductsData } from "../types/product";
 import {
-    ProductForeignKeys,
-    ProductForm,
-    ResponseModel
-} from "../types/product-form";
+    ProductTree,
+    Product,
+    ArrivalProducts,
+    OptProducts,
+    ProductSale,
+    EditingProductData,
+    EditingProductsData,
+} from "../types/product";
+import { ProductForeignKeys, ProductForm, ResponseModel } from "../types/product-form";
 import { MessageResponse } from "../types/layout";
+import { SalesAnalytics } from "../types/analytics";
 
 const api = axios.create({
-    baseURL: process.env.REACT_APP_API_URL || "https://nazar-counter-backend-49fd7cb0447d.herokuapp.com/api/",
+    baseURL:
+        process.env.REACT_APP_API_URL,
     headers: {
-    "Content-Type": "application/json",
+        "Content-Type": "application/json",
     },
 });
 
 type Result<T, E> = { success: true; data: T } | { success: false; error: E };
-
 
 // ------- GET -------
 
@@ -45,7 +50,7 @@ export const getProductTree = async (): Promise<ProductTree> => {
 export const getSales = async (): Promise<ProductSale[]> => {
     const response = await api.get<ProductSale[]>("get-sales/");
     return response.data;
-}
+};
 
 // check if there is a product by given barcode
 export const findProductByBarcode = async (barcode: string): Promise<Result<Product, string>> => {
@@ -58,6 +63,11 @@ export const findProductByBarcode = async (barcode: string): Promise<Result<Prod
     }
 };
 
+export const getSalesAnalytics = async (period: "day" | "week" | "month" = "month"): Promise<SalesAnalytics> => {
+    const response = await api.get<SalesAnalytics>(`sales-analytics?period=${period}`);
+    return response.data;
+};
+
 // ------- CREATE -------
 
 // Create product
@@ -67,7 +77,9 @@ export const createProduct = async (product: ProductForm): Promise<MessageRespon
 };
 
 // add arrival
-export const addArrival = async (products: ArrivalProducts[]): Promise<{ success: boolean, data: string }> => {
+export const addArrival = async (
+    products: ArrivalProducts[]
+): Promise<{ success: boolean; data: string }> => {
     try {
         const response = await api.post("add-arrival/", { products });
         return { success: true, data: response.data };
@@ -78,7 +90,9 @@ export const addArrival = async (products: ArrivalProducts[]): Promise<{ success
 };
 
 // add opt
-export const addOpt = async (products: OptProducts[]): Promise<{ success: boolean, data: string }> => {
+export const addOpt = async (
+    products: OptProducts[]
+): Promise<{ success: boolean; data: string }> => {
     try {
         const response = await api.post("add-opt/", { products });
         return { success: true, data: response.data };
@@ -88,33 +102,35 @@ export const addOpt = async (products: OptProducts[]): Promise<{ success: boolea
     }
 };
 
-// subtract x items from y product (you sold them)
-export const addSale = async (product_id: number, amount: number, price: number): Promise<MessageResponse> => {
+export const addSale = async (
+    product_id: number,
+    quantity: number,
+    price: number
+): Promise<MessageResponse> => {
     try {
         const response = await api.post<MessageResponse>("add-sale/", {
             product_id,
-            amount,
+            quantity,
             price,
         });
         return response.data;
-
     } catch (error: any) {
         if (error.response) {
-            return { "message": error.response.data.message };
+            return { message: error.response.data.message };
         }
-        return { "message": "An error occurred." };
+        return { message: "An error occurred." };
     }
 };
 
 export const createMultipleProducts = async (products: string): Promise<ResponseModel> => {
     try {
-        const response = await api.post('create-multiple-products/', products);
+        const response = await api.post("create-multiple-products/", products);
         return response.data;
     } catch (error: any) {
         if (error.response) {
-            return { "message": error.response.data.message };
-        } 
-        return { "message": "Трапилась помилка.", "success": false };
+            return { message: error.response.data.message };
+        }
+        return { message: "Трапилась помилка.", success: false };
     }
 };
 
@@ -126,11 +142,11 @@ export const updateProduct = async (product: EditingProductData): Promise<Respon
         return response.data;
     } catch (error: any) {
         if (error.response) {
-            return { "message": error.response.data.message };
-        } 
-        return { "message": "Трапилась помилка.", "success": false };
+            return { message: error.response.data.message };
+        }
+        return { message: "Трапилась помилка.", success: false };
     }
-}
+};
 
 export const updateProducts = async (data: EditingProductsData): Promise<ResponseModel> => {
     try {
@@ -138,11 +154,11 @@ export const updateProducts = async (data: EditingProductsData): Promise<Respons
         return response.data;
     } catch (error: any) {
         if (error.response) {
-            return { "message": error.response.data.message };
-        } 
-        return { "message": "Трапилась помилка.", "success": false };
+            return { message: error.response.data.message };
+        }
+        return { message: "Трапилась помилка.", success: false };
     }
-}
+};
 
 // ------- DELETE -------
 
@@ -152,11 +168,11 @@ export const deleteProduct = async (product_id: number): Promise<ResponseModel> 
         return response.data;
     } catch (error: any) {
         if (error.response) {
-            return { "message": error.response.data.message };
-        } 
-        return { "message": "Трапилась помилка.", "success": false };
+            return { message: error.response.data.message };
+        }
+        return { message: "Трапилась помилка.", success: false };
     }
-}
+};
 
 export const deleteSale = async (sale_id: number): Promise<ResponseModel> => {
     try {
@@ -164,8 +180,8 @@ export const deleteSale = async (sale_id: number): Promise<ResponseModel> => {
         return response.data;
     } catch (error: any) {
         if (error.response) {
-            return { "message": error.response.data.message };
-        } 
-        return { "message": "Трапилась помилка.", "success": false };
+            return { message: error.response.data.message };
+        }
+        return { message: "Трапилась помилка.", success: false };
     }
-}
+};
