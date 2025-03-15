@@ -73,6 +73,21 @@ const AnalyticsPage: React.FC = () => {
         );
     };
 
+    const groupSalesByDate = (sales: ProductSale[]) => {
+        return sales.reduce((acc, sale) => {
+            const date = new Date(sale.date).toLocaleDateString('uk-UA');
+            if (!acc[date]) {
+                acc[date] = { sales: [], totalEarnings: 0, totalRevenue: 0 };
+            }
+            acc[date].sales.push(sale);
+            acc[date].totalEarnings += (sale.sell_price - sale.buy_price);
+            acc[date].totalRevenue += sale.sell_price;
+            return acc;
+        }, {} as Record<string, { sales: ProductSale[], totalEarnings: number, totalRevenue: number }>);
+    };
+
+    const groupedSales = groupSalesByDate(sales);
+
     return (
         <div className="sales-analytics-container">
             <div className="analytics-summary">
@@ -121,12 +136,21 @@ const AnalyticsPage: React.FC = () => {
             <h2>Аналітика Продажів</h2>
 
             <div>
-                {sales.map((sale) => (
-                    <div key={sale.id} className="sale-item" id={`sale_${sale.id}`} onClick={() => setSaleDetails(sale)}>
-                        <h4>{sale.product_name} - {sale.producer_name} - {sale.product_type} <span className='red'>{sale.amount}</span></h4>
-                        <button className="sale-item-delete" onClick={(e) => {e.stopPropagation(); e.currentTarget.disabled = true; handleRemoveSale(sale.id)}}>Видалити</button>
+                {
+                    Object.entries(groupedSales).map(([date, salesOnDate]) => (
+                        <div key={date} className="sales-list">
+                        <h3 className='sales-list-date'>{date}</h3>
+                        <h4 className='sales-list-earnings'>Оборот: {salesOnDate.totalRevenue} грн</h4>
+                        <h4 className='sales-list-earnings'>Заробіток: {salesOnDate.totalEarnings} грн</h4>
+                        {(showAllSales ? salesOnDate.sales : salesOnDate.sales.slice(0, 10)).map((sale) => (
+                            <div key={sale.id} className="sale-item" id={`sale_${sale.id}`} onClick={() => setSaleDetails(sale)}>
+                                <h4>{sale.product_name} - {sale.producer_name} - {sale.product_type} <span className='red'>{sale.amount}</span></h4>
+                                <button className="sale-item-delete" onClick={(e) => {e.stopPropagation(); e.currentTarget.disabled = true; handleRemoveSale(sale.id)}}>Видалити</button>
+                            </div>
+                        ))}
                     </div>
-                ))}
+                    ))
+                }
             </div>
 
             {sales.length > 10 && (
