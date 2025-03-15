@@ -145,3 +145,26 @@ h2 {
         }
     }
 }
+
+.periods {
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+
+    .period {
+        padding: 10px 20px;
+        margin: 0 10px;
+        font-size: 1rem;
+        color: #fff;
+        background-color: #007bff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.3s ease;
+
+        &:hover {
+            background-color: #0056b3;
+        }
+
+    }
+}

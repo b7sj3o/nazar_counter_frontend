@@ -98,11 +98,13 @@ const ProductSearch: React.FC<ProductSearchProps> = ({ showAddSaleButtons = true
         return (inputQuery.length >= 1 ? filteredProducts : products).map((product) => (
             <li key={product.id} className="product-search__item">
                 <h3 className="product-search__name">
-                    {product.name || product.cartridge_model_name} {product.resistance_amount ? `- ${product.resistance_amount}` : ""}
+                    {product.name || product.cartridge_model_name} {product.resistance_amount ? `- ${product.resistance_amount}` : ""} - {product.producer_name}
                 </h3>
                 <p className="product-search__detail">К-сть: {product.amount}</p>
-                <p className="product-search__detail">Виробник: {product.producer_name}</p>
                 <p className="product-search__detail">Тип товару: {product.product_type_name}</p>
+                {product.volume_amount && (
+                    <p className="product-search__detail">Об'єм: {product.volume_amount}</p>
+                )}
 
                 <div className="product-search__btns">
                     <button
@@ -124,11 +126,13 @@ const ProductSearch: React.FC<ProductSearchProps> = ({ showAddSaleButtons = true
         return (inputQuery.length >= 1 ? filteredProducts : products).map((product) => (
             <li key={product.id} className="product-search__item">
                 <h3 className="product-search__name">
-                    {product.name || product.cartridge_model_name} {product.resistance_amount ? `- ${product.resistance_amount}` : ""}
+                    {product.name || product.cartridge_model_name} {product.resistance_amount ? `- ${product.resistance_amount}` : ""} - {product.producer_name}
                 </h3>
                 <p className="product-search__detail">К-сть: {product.amount}</p>
-                <p className="product-search__detail">Виробник: {product.producer_name}</p>
                 <p className="product-search__detail">Тип товару: {product.product_type_name}</p>
+                {product.volume_amount && (
+                    <p className="product-search__detail">Об'єм: {product.volume_amount}</p>
+                )}
 
                 {onProductAdd && (
                     <button
