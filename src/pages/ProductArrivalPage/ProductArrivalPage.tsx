@@ -76,7 +76,7 @@ const ProductArrivalPage: React.FC = () => {
                     {selectedProducts.length > 0 && (
                         selectedProducts.map((item) => (
                             <div key={item.product.id} className="product-arrival__selected__item">
-                                <h3>{item.product.producer_name} - <span>{item.product.name} - {item.amount}</span></h3>
+                                <h3>{item.product.producer_name} - <span>{item.product.name || item.product.resistance_amount} - {item.amount}</span></h3>
                                 <div className="product-arrival__selected__details">
                                     <button onClick={() => handleRemoveProduct(item.product.id)}>Видалити</button>
                                 </div>
