@@ -1,14 +1,18 @@
 // src/components/Layout.tsx
 import React, { useState, useEffect } from "react";
 import "./ProductSearch.scss";
-import { Product, ProductSearchProps } from "../../types/product";
+import { Product } from "../../types/product";
 import { useSelector } from "react-redux";
 import { addSale, getProducts } from "../../services/api";
 import { useModalMessage } from "../../context/ModalMessageContext";
 
+interface ProductSearchProps {
+    showAddSaleButtons?: boolean;
+    onProductAdd?: (product: Product, amount: number) => void;
+    getProductAmount?: (productId: number) => number;
+}
 
-
-const ProductSearch: React.FC<ProductSearchProps> = ({ showAddSaleButtons = true, onProductAdd }) => {
+const ProductSearch: React.FC<ProductSearchProps> = ({ showAddSaleButtons = true, onProductAdd, getProductAmount }) => {
     const [products, setProducts] = useState<Product[]>([]);
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [inputQuery, setInputQuery] = useState<string>("");
@@ -129,17 +133,26 @@ const ProductSearch: React.FC<ProductSearchProps> = ({ showAddSaleButtons = true
                     {product.name || product.cartridge_model_name} {product.resistance_amount ? `- ${product.resistance_amount}` : ""} - {product.producer_name}
                 </h3>
                 <p className="product-search__detail">К-сть: {product.amount}</p>
+                <p className="product-search__detail">Закупна ціна: {product.buy_price}</p>
                 <p className="product-search__detail">Тип товару: {product.product_type_name}</p>
                 {product.volume_amount && (
                     <p className="product-search__detail">Об'єм: {product.volume_amount}</p>
                 )}
 
                 {onProductAdd && (
-                    <button
-                        onClick={() => onProductAdd(product)}
-                        className="product-search__add-button" style={{ marginTop: "10px" }}>
-                        +
-                    </button>    
+                    <div className="product-search__change">
+                        <button
+                        onClick={() => onProductAdd(product, -1)}
+                        className="product-search__add-button">
+                        -
+                        </button>
+                        <p>{getProductAmount && getProductAmount(product.id)}</p>
+                        <button
+                            onClick={() => onProductAdd(product, 1)}
+                            className="product-search__add-button">
+                            +
+                        </button>    
+                    </div>
                 )}
             </li>
         ));

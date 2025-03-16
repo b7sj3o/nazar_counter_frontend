@@ -77,11 +77,9 @@ export const createProduct = async (product: ProductForm): Promise<MessageRespon
 };
 
 // add arrival
-export const addArrival = async (
-    products: ArrivalProducts[]
-): Promise<{ success: boolean; data: string }> => {
+export const addArrival = async (products: ArrivalProducts[], buy_price: number): Promise<{ success: boolean; data: string }> => {
     try {
-        const response = await api.post("add-arrival/", { products });
+        const response = await api.post("add-arrival/", { products, buy_price });
         return { success: true, data: response.data };
     } catch (error: any) {
         const message = error.response?.data?.message || "An error occurred.";
@@ -104,13 +102,13 @@ export const addOpt = async (
 
 export const addSale = async (
     product_id: number,
-    quantity: number,
+    amount: number,
     price: number
 ): Promise<MessageResponse> => {
     try {
         const response = await api.post<MessageResponse>("add-sale/", {
             product_id,
-            quantity,
+            amount,
             price,
         });
         return response.data;

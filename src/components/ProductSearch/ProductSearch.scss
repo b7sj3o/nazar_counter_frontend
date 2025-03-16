@@ -113,6 +113,12 @@
         column-gap: 10px;
     }
 
+    &__change {
+        display: flex;
+        align-items: center;
+        column-gap: 10px;
+    }
+
     &__add-button {
         padding: 5px 10px;
         color: #fff;

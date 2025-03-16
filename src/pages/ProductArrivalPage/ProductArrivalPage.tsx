@@ -6,70 +6,51 @@ import { useModalMessage } from "../../context/ModalMessageContext";
 import { addArrival } from "../../services/api";
 
 const ProductArrivalPage: React.FC = () => {
-    const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
-    const [quantity, setQuantity] = useState<number>(1);
+    const [selectedProducts, setSelectedProducts] = useState<Array<{ product: Product; amount: number }>>([]);
     const [price, setPrice] = useState<number>(0);
-    const [arrivalProducts, setArrivalProducts] = useState<Array<{ product: Product; quantity: number; price: number }>>([]);
     const { showModal } = useModalMessage();
 
-    const handleAddProduct = (product: Product) => {
-        if (!selectedProducts.find((p) => p.id === product.id)) {
-            setSelectedProducts((prev) => [...prev, product]);
-        }
+    const handleChangeProductAmount = (product: Product, amount: number) => {
+        setSelectedProducts((prev) => {
+            const existingProduct = prev.find((p) => p.product.id === product.id);
+            if (existingProduct) {
+                return prev.map((p) =>
+                    p.product.id === product.id ? { ...p, amount: Math.max(1, p.amount + amount) } : p
+                );
+            } else {
+                return [...prev, { product, amount: 1 }];
+            }
+        });
     };
 
-    const handleUpdateQuantity = (q: string) => {
-        setQuantity(parseInt(q))
-    }
+    const getProductAmount = (productId: number) => {
+        const product = selectedProducts.find((p) => p.product.id === productId);
+        return product ? product.amount : 0;
+    };
 
     const handleUpdatePrice = (p: string) => {
         setPrice(parseInt(p))
     }
 
     const handleRemoveProduct = (id: number) => {
-        setSelectedProducts((prev) => prev.filter((item) => item.id !== id));
-    };
-
-    const handleSubmitSelectedProducts = () => {
-        const newProducts = selectedProducts.filter((product) => 
-            !arrivalProducts.some((arrProduct) => arrProduct.product.id === product.id)
-        );
-
-        if (newProducts.length) {
-            const newArrivalProducts = newProducts.map((product) => ({
-                product,
-                quantity,
-                price
-            }));
-            
-            setArrivalProducts([
-                ...arrivalProducts,
-                ...newArrivalProducts
-            ]);
-
-            setSelectedProducts([]);
-        } else {
-            showModal("Такий товар вже є в таблиці!")
-        }
-
+        setSelectedProducts((prev) => prev.filter((item) => item.product.id !== id));
     };
 
     // TODO: change to product id 
     const handleSubmitArrival = async () => {
-        const productsToSend = arrivalProducts.map(({ product, quantity, price }) => ({
-            id: product.id,
-            quantity,
-            price,
-        }));
+        const productsToSend = selectedProducts.map((item => ({
+            id: item.product.id,
+            amount: item.amount,
+        })))
 
         try {
-            const response = await addArrival(productsToSend);
+            const response = await addArrival(productsToSend, price);
 
             if (response.success) {
-                alert("Arrival successfully added!");
+                showModal("Прихід успішно додано");
                 setSelectedProducts([]);
             } else {
-                alert("Error adding arrival.");
+                showModal("Прихід не вдалося додати");
             }
         } catch (error) {
             console.error("Error submitting arrival:", error);
@@ -84,7 +65,8 @@ const ProductArrivalPage: React.FC = () => {
                 {/* Product Search */}
                 <ProductSearch 
                     showAddSaleButtons={false}
-                    onProductAdd={handleAddProduct} 
+                    onProductAdd={handleChangeProductAmount} 
+                    getProductAmount={getProductAmount}
                 />
     
                 {/* Selected Products Block */}
@@ -92,25 +74,15 @@ const ProductArrivalPage: React.FC = () => {
                 <div className="product-arrival__selected">
                     <h2>Вибрані товари</h2>
                     {selectedProducts.length > 0 && (
-                        selectedProducts.map((product) => (
-                            <div key={product.id} className="product-arrival__selected__item">
-                                <h3>{product.producer_name} - <span>{product.name}</span></h3>
+                        selectedProducts.map((item) => (
+                            <div key={item.product.id} className="product-arrival__selected__item">
+                                <h3>{item.product.producer_name} - <span>{item.product.name} - {item.amount}</span></h3>
                                 <div className="product-arrival__selected__details">
-                                    <button onClick={() => handleRemoveProduct(product.id)}>Видалити</button>
+                                    <button onClick={() => handleRemoveProduct(item.product.id)}>Видалити</button>
                                 </div>
                             </div>
                         ))
                     )}
-                    <label>
-                        Кількість:
-                        <input
-                            type="number"
-                            min="1"
-                            step="1"
-                            value={quantity}
-                            onChange={(e) => handleUpdateQuantity(e.target.value)}
-                        />
-                    </label>
                     <label>
                         Закупна ціна:
                         <input
@@ -123,7 +95,7 @@ const ProductArrivalPage: React.FC = () => {
                     </label>
                     {/* Add Button for Arrival */}
                     {selectedProducts.length > 0 && (
-                        <button className="product-arrival__selected__submit" onClick={handleSubmitSelectedProducts}>
+                        <button className="product-arrival__selected__submit" onClick={handleSubmitArrival}>
                             Добавити
                         </button>
                     )}
@@ -131,63 +103,7 @@ const ProductArrivalPage: React.FC = () => {
     
             </div>
     
-            {/* Arrival Products Block */}
-            <div className="product-arrival__arrival">
-                <h2>Прихід товарів</h2>
-                <table className="product-arrival__table">
-                    <thead>
-                        <tr>
-                            <th>Назва товару</th>
-                            <th>Кількість</th>
-                            <th>Закупна ціна</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {arrivalProducts.map(({ product, quantity, price }) => (
-                            <tr key={product.id} className="product-arrival__item">
-                                <td>{product.producer_name} - {product.name}</td>
-                                <td>
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        value={quantity}
-                                        onChange={(e) => {
-                                            const updatedArrival = arrivalProducts.map((arrProduct) => 
-                                                arrProduct.product.id === product.id
-                                                    ? { ...arrProduct, quantity: +e.target.value }
-                                                    : arrProduct
-                                            );
-                                            setArrivalProducts(updatedArrival);
-                                        }}
-                                    />
-                                </td>
-                                <td>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        step="1"
-                                        value={price}
-                                        onChange={(e) => {
-                                            const updatedArrival = arrivalProducts.map((arrProduct) => 
-                                                arrProduct.product.id === product.id
-                                                    ? { ...arrProduct, price: +e.target.value }
-                                                    : arrProduct
-                                            );
-                                            setArrivalProducts(updatedArrival);
-                                        }}
-                                    />
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-                {/* Submit Button */}
-                {arrivalProducts.length > 0 && (
-                    <button className="product-arrival__submit" onClick={handleSubmitArrival}>
-                        Додати прихід
-                    </button>
-                )}
-            </div>
+          
         </>
     );
     

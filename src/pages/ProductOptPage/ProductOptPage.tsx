@@ -7,10 +7,10 @@ import { addOpt } from "../../services/api";
 
 const ProductOptPage: React.FC = () => {
     const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
-    const [quantity, setQuantity] = useState<number>(1);
+    const [amount, setAmount] = useState<number>(1);
     const [price, setPrice] = useState<number>(0);
-    const [arrivalProducts, setArrivalProducts] = useState<Array<{ product: Product; quantity: number; price: number }>>([]);
-    const [totalQuantity, setTotalQuantity] = useState<number>(0);
+    const [arrivalProducts, setArrivalProducts] = useState<Array<{ product: Product; amount: number; price: number }>>([]);
+    const [totalAmount, setTotalAmount] = useState<number>(0);
     const { showModal } = useModalMessage();
 
     const handleAddProduct = (product: Product) => {
@@ -19,8 +19,8 @@ const ProductOptPage: React.FC = () => {
         }
     };
 
-    const handleUpdateQuantity = (q: string) => {
-        setQuantity(parseInt(q));
+    const handleUpdateAmount = (q: string) => {
+        setAmount(parseInt(q));
     };
 
     const handleUpdatePrice = (p: string) => {
@@ -39,7 +39,7 @@ const ProductOptPage: React.FC = () => {
         if (newProducts.length) {
             const newArrivalProducts = newProducts.map((product) => ({
                 product,
-                quantity,
+                amount,
                 price
             }));
 
@@ -52,17 +52,17 @@ const ProductOptPage: React.FC = () => {
 
             setSelectedProducts([]);
 
-            const suma = updatedArrival.reduce((sum, product) => sum + product.quantity, 0);
-            setTotalQuantity(suma || totalQuantity);
+            const suma = updatedArrival.reduce((sum, product) => sum + product.amount, 0);
+            setTotalAmount(suma || totalAmount);
         } else {
             showModal("Такий товар вже є в таблиці!");
         }
     };
 
     const handleSubmitArrival = async () => {
-        const productsToSend = arrivalProducts.map(({ product, quantity, price }) => ({
+        const productsToSend = arrivalProducts.map(({ product, amount, price }) => ({
             id: product.id,
-            quantity,
+            amount,
             price,
         }));
 
@@ -91,8 +91,8 @@ const ProductOptPage: React.FC = () => {
         );
         setArrivalProducts(updatedArrival);
 
-        const suma = updatedArrival.reduce((sum, product) => sum + product.quantity, 0);
-        setTotalQuantity(suma || totalQuantity);
+        const suma = updatedArrival.reduce((sum, product) => sum + product.amount, 0);
+        setTotalAmount(suma || totalAmount);
     };
 
     return (
@@ -122,8 +122,8 @@ const ProductOptPage: React.FC = () => {
                             type="number"
                             min="1"
                             step="1"
-                            value={quantity}
-                            onChange={(e) => handleUpdateQuantity(e.target.value)}
+                            value={amount}
+                            onChange={(e) => handleUpdateAmount(e.target.value)}
                         />
                     </label>
                     <label>
@@ -149,19 +149,19 @@ const ProductOptPage: React.FC = () => {
                     <thead>
                         <tr>
                             <th>Назва товару</th>
-                            <th>Кількість |<span className="red"> {totalQuantity}</span></th>
+                            <th>Кількість |<span className="red"> {totalAmount}</span></th>
                             <th>Продажна ціна</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {arrivalProducts.map(({ product, quantity, price }) => (
+                        {arrivalProducts.map(({ product, amount, price }) => (
                             <tr key={product.id} className="product-arrival__item">
                                 <td>{product.producer_name} - {product.name}</td>
                                 <td>
                                     <input
                                         type="number"
-                                        value={quantity}
-                                        onChange={(e) => handleProductDataChange(e, product.id, "quantity", e.target.value)}
+                                        value={amount}
+                                        onChange={(e) => handleProductDataChange(e, product.id, "amount", e.target.value)}
                                     />
                                 </td>
                                 <td>

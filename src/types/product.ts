@@ -20,8 +20,7 @@ export interface Product {
 
 export interface ArrivalProducts {
     id: number;
-    quantity: number;
-    price: number;
+    amount: number;
 }
 
 export interface OptProducts extends ArrivalProducts {};
@@ -92,10 +91,7 @@ export interface ProductTree {
     [productType: string]: ProductTypeGroup;
 }
 
-export interface ProductSearchProps {
-    showAddSaleButtons?: boolean;
-    onProductAdd?: (product: Product) => void;
-}
+
 
 export interface ProductSale {
     id: number;
