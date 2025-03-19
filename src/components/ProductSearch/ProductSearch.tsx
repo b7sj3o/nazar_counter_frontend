@@ -98,11 +98,25 @@ const ProductSearch: React.FC<ProductSearchProps> = ({ showAddSaleButtons = true
         }
     };
 
+    const getProductName = (product: Product) => {
+        const type = product.product_type_name.toLowerCase();
+        
+        if (type === "под") {
+            return `${product.producer_name} ${product.pod_model_name} - ${product.name}`;
+        }
+    
+        if (type === "картридж") {
+            return `${product.producer_name} ${product.cartridge_model_name} - ${product.resistance_amount}`;
+        }
+    
+        return `${product.producer_name} - ${product.name}`;
+    }
+
     const renderProducts = () => {
         return (inputQuery.length >= 1 ? filteredProducts : products).map((product) => (
             <li key={product.id} className="product-search__item">
                 <h3 className="product-search__name">
-                    {product.name || product.cartridge_model_name} {product.resistance_amount ? `- ${product.resistance_amount}` : ""} - {product.producer_name}
+                    {getProductName(product)}
                 </h3>
                 <p className="product-search__detail">К-сть: {product.amount}</p>
                 <p className="product-search__detail">Тип товару: {product.product_type_name}</p>
@@ -130,7 +144,7 @@ const ProductSearch: React.FC<ProductSearchProps> = ({ showAddSaleButtons = true
         return (inputQuery.length >= 1 ? filteredProducts : products).map((product) => (
             <li key={product.id} className="product-search__item">
                 <h3 className="product-search__name">
-                    {product.name || product.cartridge_model_name} {product.resistance_amount ? `- ${product.resistance_amount}` : ""} - {product.producer_name}
+                    {getProductName(product)}
                 </h3>
                 <p className="product-search__detail">К-сть: {product.amount}</p>
                 <p className="product-search__detail">Закупна ціна: {product.buy_price}</p>

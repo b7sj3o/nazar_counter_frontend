@@ -72,7 +72,7 @@ const ProductArrivalPage: React.FC = () => {
                 {/* Selected Products Block */}
                 <br />
                 <div className="product-arrival__selected">
-                    <h2>Вибрані товари</h2>
+                    {/* <h2>Вибрані товари</h2>
                     {selectedProducts.length > 0 && (
                         selectedProducts.map((item) => (
                             <div key={item.product.id} className="product-arrival__selected__item">
@@ -82,14 +82,14 @@ const ProductArrivalPage: React.FC = () => {
                                 </div>
                             </div>
                         ))
-                    )}
+                    )} */}
                     <label>
                         Закупна ціна:
                         <input
                             type="number"
                             min="0"
                             step="1"
-                            value={price}
+                            value={price || ""}
                             onChange={(e) => handleUpdatePrice(e.target.value)}
                         />
                     </label>

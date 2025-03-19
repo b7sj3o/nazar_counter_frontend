@@ -1,1 +1,0 @@
-.move-to-top{position:fixed;right:20px;bottom:20px;width:50px;height:50px;background-color:#4a90e2;color:#fff;border:none;border-radius:12px;cursor:pointer;transition:all .3s ease}.move-to-top img{width:20px;height:20px}@keyframes moveRight{0%{right:20px}100%{right:-40px}}@keyframes moveLeft{0%{right:-40px}100%{right:20px}}
