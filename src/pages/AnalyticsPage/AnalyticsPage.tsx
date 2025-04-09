@@ -15,12 +15,13 @@ const AnalyticsPage: React.FC = () => {
     const { showModal } = useModalMessage();
     const [saleDetails, setSaleDetails] = useState<ProductSale | null>(null);
 
+    const fetchSales = async (period: string = "") => {
+        const filteredSales = await getSales(period);
+        setSales(filteredSales);
+    };
+    
     useEffect(() => {
-        const fetchSales = async () => {
-            const filteredSales = await getSales();
-            setSales(filteredSales);
-        };
-        fetchSales();
+        fetchSales("day");
     }, []);
 
     useEffect(() => {
@@ -32,7 +33,8 @@ const AnalyticsPage: React.FC = () => {
     }, [period]);
 
     const handleToggleShowAll = () => {
-        setShowAllSales(!showAllSales);
+        fetchSales();
+        setShowAllSales(true);
     };
 
     const handleRemoveSale = async (id: number) => {
@@ -152,12 +154,14 @@ const AnalyticsPage: React.FC = () => {
                     ))
                 }
             </div>
-
-            {sales.length > 10 && (
-                <button onClick={handleToggleShowAll} className='show-all-button'>
-                    {showAllSales ? 'Показати менше' : 'Показати всі'}
-                </button>
-            )}
+            <button 
+                onClick={handleToggleShowAll} 
+                className='show-all-button' 
+                disabled={showAllSales} 
+                style={{ cursor: showAllSales ? 'not-allowed' : 'pointer' }}
+            >
+                Показати всі
+            </button>
 
             {saleDetails && renderSaleDetails()}
         </div>

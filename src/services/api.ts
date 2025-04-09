@@ -47,8 +47,8 @@ export const getProductTree = async (): Promise<ProductTree> => {
     return response.data;
 };
 
-export const getSales = async (): Promise<ProductSale[]> => {
-    const response = await api.get<ProductSale[]>("get-sales/");
+export const getSales = async (period: string = ""): Promise<ProductSale[]> => {
+    const response = await api.get<ProductSale[]>(`get-sales?period=${period}`);
     return response.data;
 };
 
